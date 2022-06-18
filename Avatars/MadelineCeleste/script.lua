@@ -9,13 +9,13 @@
 function player_init()
 	-- load saved values
 	armorEnabled = false
-	elytraEnabled = false
+	particlesEnabled = false
 	if data.load("armorEnabled") == "true" then
 		armorEnabled = true
 	end
 
-	if data.load("elytraEnabled") == "true" then
-		elytraEnabled = true
+	if data.load("particlesEnabled") == "true" then
+		particlesEnabled = true
 	end
 
 	-- defaults
@@ -23,6 +23,11 @@ function player_init()
 
 	-- disable vanilla model
 	for key, value in pairs(vanilla_model) do
+		value.setEnabled(false)
+	end
+
+	-- disable elytra model
+	for key, value in pairs(elytra_model) do
 		value.setEnabled(false)
 	end
 
@@ -55,9 +60,9 @@ function player_init()
 	action_wheel.SLOT_1.setItem("minecraft:netherite_chestplate")
 	action_wheel.SLOT_1.setFunction(function() ping.armor( not armorEnabled) end)
 
-	action_wheel.SLOT_2.setTitle("Toggle Elytra")
-	action_wheel.SLOT_2.setItem("minecraft:elytra")
-	action_wheel.SLOT_2.setFunction(function() ping.elytra( not elytraEnabled) end)
+	action_wheel.SLOT_2.setTitle("Toggle Particles")
+	action_wheel.SLOT_2.setItem("minecraft:nether_star")
+	action_wheel.SLOT_2.setFunction(function() ping.particles( not particlesEnabled) end)
 
 	animation.shrink.setBlendTime(0)
 
@@ -91,7 +96,9 @@ end
 
 function render(delta)
 	eyesAnim(delta)
-	particles()
+	if particlesEnabled then
+		particles()
+	end
 end
 
 ---------------------
@@ -100,23 +107,12 @@ end
 
 function vanillaParts()
 	-- show or hide armor
-	if armorEnabled and not animationPlaying then
+	if armorEnabled and animation.shrink.getPlayState() == "STOPPED" then
 		for key, value in pairs(armor_model) do
 			value.setEnabled(true)
 		end
 	else
 		for key, value in pairs(armor_model) do
-			value.setEnabled(false)
-		end
-	end
-
-	-- show or hide elytra
-	if elytraEnabled and not animationPlaying then
-		for key, value in pairs(elytra_model) do
-			value.setEnabled(true)
-		end
-	else
-		for key, value in pairs(elytra_model) do
 			value.setEnabled(false)
 		end
 	end
@@ -220,7 +216,7 @@ end
 -- Ping Functions --
 --------------------
 
-function ping.blink(arg, armorState, elytraState)
+function ping.blink(arg, armorState, particlesState)
 	-- enable blinking
 	isBlinking = true
 
@@ -233,9 +229,9 @@ function ping.blink(arg, armorState, elytraState)
 		armorEnabled = armorState
 	end
 
-	-- periodic elytra sync
-	if elytraState ~= nil then
-		elytraEnabled = elytraState
+	-- periodic particles sync
+	if particlesState ~= nil then
+		particlesEnabled = particlesState
 	end
 end
 
@@ -245,10 +241,10 @@ function ping.armor(state)
 	armorEnabled = state
 end
 
-function ping.elytra(state)
-	data.save("elytraEnabled", state)
-	log("§bElytra Visibility§f: §e" .. printState(state))
-	elytraEnabled = state
+function ping.particles(state)
+	data.save("particlesEnabled", state)
+	log("§bParticle Visibility§f: §e" .. printState(state))
+	particlesEnabled = state
 end
 
 function ping.jumpPressed()
@@ -301,7 +297,7 @@ function blink()
 	elseif blinkTick >= BLINK_MIN_DELAY and math.random() < BLINK_CHANCE or blinkTick >= BLINK_MAX_DELAY then
 		-- dummy blink
 		if client.isHost() and math.random() < DUMMY_BLINK_CHANCE then
-			ping.blink(math.random() < 0.5, armorEnabled, elytraEnabled)
+			ping.blink(math.random() < 0.5, armorEnabled, particlesEnabled)
 		-- normal blink
 		else
 			isBlinking  = true
