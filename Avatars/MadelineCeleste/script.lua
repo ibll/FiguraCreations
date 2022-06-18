@@ -7,7 +7,7 @@
 ----------------------
 
 function player_init()
-	-- defaults
+	-- load saved values
 	armorEnabled = false
 	elytraEnabled = false
 	if data.load("armorEnabled") == "true" then
@@ -17,6 +17,9 @@ function player_init()
 	if data.load("elytraEnabled") == "true" then
 		elytraEnabled = true
 	end
+
+	-- defaults
+	featherTimer = 0
 
 	-- disable vanilla model
 	for key, value in pairs(vanilla_model) do
@@ -56,9 +59,19 @@ function player_init()
 	action_wheel.SLOT_2.setItem("minecraft:elytra")
 	action_wheel.SLOT_2.setFunction(function() ping.elytra( not elytraEnabled) end)
 
+	animation.shrink.setBlendTime(0)
+
+	-- function setup
 	swingOnHead(model.Head.ExtendedHair, 180, {-120, 65, -30, 30, -30, 30})
 	swingOnHead(model.Head.ExtendedHair.Hair1, 180, {-120, 65, -30, 30, -30, 30}, model.Head.ExtendedHair, 1)
 	swingOnHead(model.Head.ExtendedHair.Hair1.Hair2, 180, {-120, 65, -30, 30, -30, 30}, model.Head.ExtendedHair, 2)
+
+	swingOnHead(model.GoldenFeather.Feather1, 180)
+	swingOnHead(model.GoldenFeather.Feather1.Feather2, 180, nil, model.GoldenFeather.Feather1, 1)
+	swingOnHead(model.GoldenFeather.Feather1.Feather2.Feather3, 180, nil, model.GoldenFeather.Feather1, 2)
+
+	-- piece setup
+	model.GoldenFeather.setLight({15, 15})
 end
 
 function tick()
@@ -113,10 +126,10 @@ function customParts()
 	-- show or hide model parts depdnding if animating, armor enabled, or if item equipped
 	if player.getEquipmentItem(6).getType() == "minecraft:air" or not armor_model.HELMET.getEnabled() then
 		--nameplate.ENTITY.setPos({0, 0.2, 0})
-		model.Head.HairSwoosh.setEnabled(true)
+		model.Head.TopHair.Swoosh.setEnabled(true)
 	else 
 		--nameplate.ENTITY.setPos({0, 0, 0})
-		model.Head.HairSwoosh.setEnabled(false)
+		model.Head.TopHair.Swoosh.setEnabled(false)
 	end
 
 	if player.getEquipmentItem(5).getType() == "minecraft:air" or player.getEquipmentItem(5).getType() == "minecraft:elytra" or not armor_model.CHESTPLATE.getEnabled() then
@@ -125,34 +138,82 @@ function customParts()
 		model.Body.Bust.setEnabled(false)
 	end
 
+	-- Hair Colour
 	if isJumping then
 		model.Head.ExtendedHair.setUV({16/128, 0})
-		model.Head.FlatHair.setUV({0, 16/64})
-		model.Head.HairSwoosh.setUV({0, 16/64})
+		model.Head.TopHair.setUV({0, 16/64})
 	else
 		model.Head.ExtendedHair.setUV({0, 0})
-		model.Head.FlatHair.setUV({0, 0})
-		model.Head.HairSwoosh.setUV({0, 0})
+		model.Head.TopHair.setUV({0, 0})
 	end
 
+	-- Golden Feather
+
+	if player.getAnimation() == "FALL_FLYING" then
+		if animation.shrink.getPlayState() == "STOPPED" then
+			animation.shrink.setSpeed(1)
+			animation.shrink.setLoopMode("HOLD")
+			animation.shrink.play()
+		end
+
+		-- Flicker red when falling too far down
+		if (player.getRot().x > 45) then
+			featherTimer = featherTimer + 1
+			if featherTimer % 2 ~= 0 then
+				if model.GoldenFeather.getColor()[1] ~= 1 then
+					model.GoldenFeather.setColor({1, 1, 1})
+				else
+					model.GoldenFeather.setColor({2, 0.5, 0.5})
+				end
+			end
+		else
+			model.GoldenFeather.setColor({1, 1, 1})
+			featherTimer = 0
+		end
+	else
+		if animation.shrink.getPlayState() == "ENDED" then
+			animation.shrink.setSpeed(-1)
+			animation.shrink.setLoopMode("ONCE")
+			animation.shrink.play()
+		end
+		for key, value in pairs(model) do
+			value.setEnabled(true)
+		end
+
+	end
+
+	if animation.shrink.getPlayState() == "STOPPED" then
+		model.GoldenFeather.setEnabled(false)
+	else
+		model.GoldenFeather.setEnabled(true)
+	end
 end
 
 function particles()
 	if renderer.isFirstPerson() then return end
 	if math.abs(player.getVelocity().getLength()) <= 0.225 then return end
 
-	if isJumping then
-		handParticleColor = {131/255, 221/255, 235/255}
-		footParticleColor = {39/255, 117/255, 211/255}
+	if player.getAnimation() ~= "FALL_FLYING" then
+		if isJumping then
+			handParticleColor = {131/255, 221/255, 235/255}
+			footParticleColor = {39/255, 117/255, 211/255}
+		else
+			handParticleColor = {225/255, 114/255, 78/255}
+			footParticleColor = {202/255, 53/255, 37/255}
+		end
+	
+		spawnParticle(model.RightArm.partToWorldPos({0, -10, 0}), handParticleColor)
+		spawnParticle(model.LeftArm.partToWorldPos({0, -10, 0}), handParticleColor)
+		spawnParticle(model.RightLeg.partToWorldPos({0, -10, 0}), footParticleColor)
+		spawnParticle(model.LeftLeg.partToWorldPos({0, -10, 0}), footParticleColor)
 	else
-		handParticleColor = {225/255, 114/255, 78/255}
-		footParticleColor = {202/255, 53/255, 37/255}
+		if model.GoldenFeather.getColor()[1] ~= 1 then
+			spawnParticle(model.GoldenFeather.partToWorldPos({0, 0, 0}), {255/255, 96/255, 95/255})
+		else
+			spawnParticle(model.GoldenFeather.partToWorldPos({0, 0, 0}), {255/255, 255/255, 95/255})
+		end
 	end
 
-	spawnParticle(model.RightArm.partToWorldPos({0, -10, 0}), handParticleColor)
-	spawnParticle(model.LeftArm.partToWorldPos({0, -10, 0}), handParticleColor)
-	spawnParticle(model.RightLeg.partToWorldPos({0, -10, 0}), footParticleColor)
-	spawnParticle(model.LeftLeg.partToWorldPos({0, -10, 0}), footParticleColor)
 end
 
 --------------------
