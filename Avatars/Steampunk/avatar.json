@@ -1,0 +1,12 @@
+{
+	"name": "Steampunk Girl",
+	"authors": [
+		"TheGoodDude22"
+	],
+	"autoAnims": [
+		"steampunk.machines_idle"
+	],
+	"autoScripts": [
+		"script"
+	]
+}

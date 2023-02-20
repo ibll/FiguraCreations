@@ -1,212 +1,216 @@
--- Art, model, and animations by TheGoodDude#6142
--- Eyes blinking and movement by Fran#3814
--- Hair physics by Manuel_#2867
+Swing = require("swing")
+Blink = require("blink")
 
 ----------------------
 -- Figura Functions --
 ----------------------
 
-function player_init()
-	-- load saved values
-	armorEnabled = false
-	particlesEnabled = false
-	if data.load("armorEnabled") == "true" then
-		armorEnabled = true
-	end
+function events.entity_init()
+	Tick = 0
 
-	if data.load("particlesEnabled") == "true" then
-		particlesEnabled = true
-	end
+	-- action wheel constants
+	ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
+	DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
+	-- feather vars
+	FeatherTimer = 0
+	-- jumping constants
+	JumpKey = keybinds:fromVanilla("key.jump")
+	-- jumping vars
+	IsJumping = false
+	-- anim constants
+	SHRINK_ANIM = animations.player_model.shrink
+	FEATHER_SHRINK_ANIM = animations.feather_model.shrink
 
-	-- defaults
-	featherTimer = 0
+	vanilla_model.INNER_LAYER:setVisible(false)
+	vanilla_model.OUTER_LAYER:setVisible(false)
+	vanilla_model.CAPE:setVisible(false)
+	vanilla_model.ELYTRA:setVisible(false)
 
-	-- disable vanilla model
-	for key, value in pairs(vanilla_model) do
-		value.setEnabled(false)
-	end
+	-- config loading
+	ArmorEnabled = false
+	ParticlesEnabled = false 
+	if config:load("ArmorEnabled") == true then ArmorEnabled = true end
+	if config:load("ParticlesEnabled") == true then ParticlesEnabled = true end
 
-	-- disable elytra model
-	for key, value in pairs(elytra_model) do
-		value.setEnabled(false)
-	end
+	-- action wheel
+	ActionWheelPg1 = action_wheel:newPage("Functions")
+	action_wheel:setPage(ActionWheelPg1)
 
-	-- jump detection
-	isJumping = false
-	jumpKey = keybind.getRegisteredKeybind("key.jump")
+	ArmorToggleAction = ActionWheelPg1:newAction()
+		:item("minecraft:netherite_chestplate")
+		:title("Enable Armour")
+		:color(DISABLED_COLOR)
+		:onToggle(pings.toggleArmor)
+		:toggleTitle("Disable Armour")
+		:toggleColor(ENABLED_COLOR)
+	ArmorToggleAction:setToggled(ArmorEnabled)
+	ParticleToggleAction = ActionWheelPg1:newAction()
+		:item("minecraft:nether_star")
+		:title("Enable Particles")
+		:color(DISABLED_COLOR)
+		:onToggle(pings.toggleParticles)
+		:toggleTitle("Disable Particles")
+		:toggleColor(ENABLED_COLOR)
+	ParticleToggleAction:setToggled(ParticlesEnabled)
 
-	-- blink constants
-	TEXTURE_WIDTH   = 128    -- texture size (width), in pixels
-	TEXTURE_HEIGHT  = 64    -- texture size (height), in pixels
+	Swing.head(models.player_model.Head.ExtendedHair, 180, {-120, 65, -30, 30, -30, 30})
+	Swing.head(models.player_model.Head.ExtendedHair.Hair1, 180, {-120, 65, -30, 30, -30, 30}, models.player_model.Head.ExtendedHair, 1)
+	Swing.head(models.player_model.Head.ExtendedHair.Hair1.Hair2, 180, {-120, 65, -30, 30, -30, 30}, models.player_model.Head.ExtendedHair, 2)
 
-	BLINK_MIN_DELAY = 70    -- minimum delay for blink, in ticks
-	BLINK_MAX_DELAY = 100   -- maximum delay for blink, in ticks  
-	BLINK_CHANCE    = 0.03  -- chance for blinking after the minimum delay is reached
-  
-	DUMMY_BLINK_CHANCE = 0.01 -- chance to make a dummy blink (blink one eye then another)
-	DUMMY_BLINK_DELAY  = 5    -- delay in ticks to blink the other eye
+	Swing.head(models.feather_model.GoldenFeather.Feather1, 180)
+	Swing.head(models.feather_model.GoldenFeather.Feather1.Feather2, 180, nil, models.feather_model.GoldenFeather.Feather1, 1)
+	Swing.head(models.feather_model.GoldenFeather.Feather1.Feather2.Feather3, 180, nil, models.feather_model.GoldenFeather.Feather1, 2)
 
-	-- blink vars
-	isBlinking  = true
-	lblinkFrame = 0
-	rblinkFrame = 0
-	blinkTick   = 0
-
-	-- wheel, keybinds, and animations
-	action_wheel.setLeftSize(1)
-	action_wheel.setRightSize(1)
-
-	action_wheel.SLOT_1.setTitle("Toggle Armour")
-	action_wheel.SLOT_1.setItem("minecraft:netherite_chestplate")
-	action_wheel.SLOT_1.setFunction(function() ping.armor( not armorEnabled) end)
-
-	action_wheel.SLOT_2.setTitle("Toggle Particles")
-	action_wheel.SLOT_2.setItem("minecraft:nether_star")
-	action_wheel.SLOT_2.setFunction(function() ping.particles( not particlesEnabled) end)
-
-	animation.shrink.setBlendTime(0)
-
-	-- function setup
-	swingOnHead(model.Head.ExtendedHair, 180, {-120, 65, -30, 30, -30, 30})
-	swingOnHead(model.Head.ExtendedHair.Hair1, 180, {-120, 65, -30, 30, -30, 30}, model.Head.ExtendedHair, 1)
-	swingOnHead(model.Head.ExtendedHair.Hair1.Hair2, 180, {-120, 65, -30, 30, -30, 30}, model.Head.ExtendedHair, 2)
-
-	swingOnHead(model.GoldenFeather.Feather1, 180)
-	swingOnHead(model.GoldenFeather.Feather1.Feather2, 180, nil, model.GoldenFeather.Feather1, 1)
-	swingOnHead(model.GoldenFeather.Feather1.Feather2.Feather3, 180, nil, model.GoldenFeather.Feather1, 2)
-
-	-- piece setup
-	model.GoldenFeather.setLight({15, 15})
+	models.feather_model.GoldenFeather:setLight(vectors.vec2(15, 15))
 end
 
-function tick()
-	if jumpKey.isPressed() and isJumping == false then
-		ping.jumpPressed()
+function events.tick()
+	Tick = Tick + 1
+	if Tick > 200 then
+		if host:isHost() then
+			pings.sync(ArmorEnabled, ElytraEnabled)
+		end
+		Tick = 0
+	end
+	
+	if JumpKey:isPressed() and IsJumping == false then
+		pings.jumpPressed()
 	end
 
-	if isJumping and player.getVelocity().y == 0 then
-		isJumping = false
+	if IsJumping and player:getVelocity().y == 0 then
+		IsJumping = false
 	end
 
-	-- tick functions
-	blink()
-	vanillaParts()
-	customParts()
+	Blink.blink()
+	VanillaParts()
 end
 
-function render(delta)
-	eyesAnim(delta)
-	if particlesEnabled then
-		particles()
-	end
+function events.render(delta, context)
+	if context == "RENDER" then Blink.eyesAnim(delta) end
+	if ParticlesEnabled then Particles() end
+	CustomParts()
 end
 
 ---------------------
 -- Model Functions --
 ---------------------
 
-function vanillaParts()
+function VanillaParts()
 	-- show or hide armor
-	if armorEnabled and animation.shrink.getPlayState() == "STOPPED" then
-		for key, value in pairs(armor_model) do
-			value.setEnabled(true)
-		end
+	if ArmorEnabled and animations.player_model.shrink:getPlayState() == "STOPPED" then
+		vanilla_model.ARMOR:setVisible(true)
 	else
-		for key, value in pairs(armor_model) do
-			value.setEnabled(false)
-		end
+		vanilla_model.ARMOR:setVisible(false)
 	end
 end
 
-function customParts()
-	-- show or hide model parts depdnding if animating, armor enabled, or if item equipped
-	if player.getEquipmentItem(6).getType() == "minecraft:air" or not armor_model.HELMET.getEnabled() then
-		--nameplate.ENTITY.setPos({0, 0.2, 0})
-		model.Head.TopHair.Swoosh.setEnabled(true)
-	else 
-		--nameplate.ENTITY.setPos({0, 0, 0})
-		model.Head.TopHair.Swoosh.setEnabled(false)
-	end
+function CustomParts()
+	-- show or hide model parts depending if animating, armor enabled, or if item equipped
 
-	if player.getEquipmentItem(5).getType() == "minecraft:air" or player.getEquipmentItem(5).getType() == "minecraft:elytra" or not armor_model.CHESTPLATE.getEnabled() then
-		model.Body.Bust.setEnabled(true)
-	else
-		model.Body.Bust.setEnabled(false)
+	function ShowHairSwoosh()
+		local HAIR_SWOOSH = models.player_model.Head.TopHair.Swoosh
+		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then return HAIR_SWOOSH:setVisible(false) end
+		if player:getItem(6).id == "minecraft:air" then return HAIR_SWOOSH:setVisible(true) end
+		if not vanilla_model.HELMET:getVisible() then return HAIR_SWOOSH:setVisible(true) end
+		HAIR_SWOOSH:setVisible(false)
 	end
+	ShowHairSwoosh()
+
+	function ShowBust()
+		local BUST = models.player_model.Body.Bust
+		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then return BUST:setVisible(false) end
+		if player:getItem(5).id == "minecraft:air" then return BUST:setVisible(true) end
+		if player:getItem(5).id == "minecraft:elytra" then return BUST:setVisible(true) end
+		if not vanilla_model.CHESTPLATE:getVisible() then return BUST:setVisible(true) end
+		BUST:setVisible(false)
+	end
+	ShowBust()
 
 	-- Hair Colour
-	if isJumping then
-		model.Head.ExtendedHair.setUV({16/128, 0})
-		model.Head.TopHair.setUV({0, 16/64})
+	if IsJumping then
+		models.player_model.Head.ExtendedHair:setUV(16/128, 0)
+		models.player_model.Head.TopHair:setUV(0, 16/64)
 	else
-		model.Head.ExtendedHair.setUV({0, 0})
-		model.Head.TopHair.setUV({0, 0})
+		models.player_model.Head.ExtendedHair:setUV(0, 0)
+		models.player_model.Head.TopHair:setUV(0, 0)
 	end
 
 	-- Golden Feather
+	if player:getPose() == "FALL_FLYING" then
+		if SHRINK_ANIM:getPlayState() == "STOPPED" then
+			SHRINK_ANIM:setSpeed(1)
+			SHRINK_ANIM:loop("HOLD")
+			SHRINK_ANIM:play()
 
-	if player.getAnimation() == "FALL_FLYING" then
-		if animation.shrink.getPlayState() == "STOPPED" then
-			animation.shrink.setSpeed(1)
-			animation.shrink.setLoopMode("HOLD")
-			animation.shrink.play()
+			FEATHER_SHRINK_ANIM:setSpeed(1)
+			FEATHER_SHRINK_ANIM:loop("HOLD")
+			FEATHER_SHRINK_ANIM:play()
 		end
 
 		-- Flicker red when falling too far down
-		if (player.getRot().x > 45) then
-			featherTimer = featherTimer + 1
-			if featherTimer % 2 ~= 0 then
-				if model.GoldenFeather.getColor()[1] ~= 1 then
-					model.GoldenFeather.setColor({1, 1, 1})
+		if (player:getRot().x > 45) then
+			FeatherTimer = FeatherTimer + 1
+			if FeatherTimer % 2 ~= 0 then
+				if models.feather_model.GoldenFeather:getColor()[1] ~= 1 then
+					models.feather_model.GoldenFeather:setColor(1, 1, 1)
 				else
-					model.GoldenFeather.setColor({2, 0.5, 0.5})
+					models.feather_model.GoldenFeather:setColor(2, 0.5, 0.5)
 				end
 			end
 		else
-			model.GoldenFeather.setColor({1, 1, 1})
-			featherTimer = 0
+			models.feather_model.GoldenFeather:setColor(1, 1, 1)
+			FeatherTimer = 0
 		end
+
+		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then
+			models.player_model:setVisible(false)
+		end
+
 	else
-		if animation.shrink.getPlayState() == "ENDED" then
-			animation.shrink.setSpeed(-1)
-			animation.shrink.setLoopMode("ONCE")
-			animation.shrink.play()
+
+		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then
+		--if animations.player_model.shrink:getPlayState() == "ENDED" then
+			SHRINK_ANIM:stop()
+		
+
+			FEATHER_SHRINK_ANIM:stop()
+		
 		end
-		for key, value in pairs(model) do
-			value.setEnabled(true)
+		if not models.player_model.Head:getVisible() then
+			models.player_model:setVisible(true)
 		end
 
 	end
 
-	if animation.shrink.getPlayState() == "STOPPED" then
-		model.GoldenFeather.setEnabled(false)
+	if animations.player_model.shrink:getPlayState() == "STOPPED" then
+		models.feather_model.GoldenFeather:setVisible(false)
 	else
-		model.GoldenFeather.setEnabled(true)
+		models.feather_model.GoldenFeather:setVisible(true)
 	end
 end
 
-function particles()
-	if renderer.isFirstPerson() then return end
-	if math.abs(player.getVelocity().getLength()) <= 0.225 then return end
+function Particles()
+	if renderer:isFirstPerson() then return end
+	if math.abs(player:getVelocity():length()) <= 0.225 then return end
 
-	if player.getAnimation() ~= "FALL_FLYING" then
-		if isJumping then
-			handParticleColor = {131/255, 221/255, 235/255}
-			footParticleColor = {39/255, 117/255, 211/255}
+	if player:getPose() ~= "FALL_FLYING" then
+		if IsJumping then
+			HandParticleColor = {131/255, 221/255, 235/255}
+			FootParticleColor = {39/255, 117/255, 211/255}
 		else
-			handParticleColor = {225/255, 114/255, 78/255}
-			footParticleColor = {202/255, 53/255, 37/255}
+			HandParticleColor = {225/255, 114/255, 78/255}
+			FootParticleColor = {202/255, 53/255, 37/255}
 		end
-	
-		spawnParticle(model.RightArm.partToWorldPos({0, -10, 0}), handParticleColor)
-		spawnParticle(model.LeftArm.partToWorldPos({0, -10, 0}), handParticleColor)
-		spawnParticle(model.RightLeg.partToWorldPos({0, -10, 0}), footParticleColor)
-		spawnParticle(model.LeftLeg.partToWorldPos({0, -10, 0}), footParticleColor)
+
+		SpawnParticle(models.player_model.RightArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
+		SpawnParticle(models.player_model.LeftArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
+		SpawnParticle(models.player_model.RightLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
+		SpawnParticle(models.player_model.LeftLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
 	else
-		if model.GoldenFeather.getColor()[1] ~= 1 then
-			spawnParticle(model.GoldenFeather.partToWorldPos({0, 0, 0}), {255/255, 96/255, 95/255})
+		if models.feather_model.GoldenFeather:getColor()[1] ~= 1 then
+			SpawnParticle(models.feather_model.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 96/255, 95/255})
 		else
-			spawnParticle(model.GoldenFeather.partToWorldPos({0, 0, 0}), {255/255, 255/255, 95/255})
+			SpawnParticle(models.feather_model.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 255/255, 95/255})
 		end
 	end
 
@@ -216,46 +220,32 @@ end
 -- Ping Functions --
 --------------------
 
-function ping.blink(arg, armorState, particlesState)
-	-- enable blinking
-	isBlinking = true
-
-	-- dummy blink
-	lblinkFrame = arg and -DUMMY_BLINK_DELAY or 0
-	rblinkFrame = not arg and -DUMMY_BLINK_DELAY or 0
-
-	-- periodic armor sync
-	if armorState ~= nil then
-		armorEnabled = armorState
-	end
-
-	-- periodic particles sync
-	if particlesState ~= nil then
-		particlesEnabled = particlesState
-	end
+function pings.jumpPressed()
+	IsJumping = true
 end
 
-function ping.armor(state)
-	data.save("armorEnabled", state)
-	log("§bArmor Visibility§f: §e" .. printState(state))
-	armorEnabled = state
+function pings.toggleArmor(state)
+	config:save("ArmorEnabled", state)
+	print("§bArmour Visibility§f: §e" .. PrintState(state))
+	ArmorEnabled = state
 end
 
-function ping.particles(state)
-	data.save("particlesEnabled", state)
-	log("§bParticle Visibility§f: §e" .. printState(state))
-	particlesEnabled = state
+function pings.toggleParticles(state)
+	config:save("ParticlesEnabled", state)
+	print("§bParticle Visibility§f: §e" .. PrintState(state))
+	ParticlesEnabled = state
 end
 
-function ping.jumpPressed()
-	isJumping = true
+function pings.sync(armourState, elytraState)
+    ArmorEnabled = armourState
+    ElytraEnabled = elytraState
 end
 
 ----------------------
 -- Helper Functions --
 ----------------------
 
-function printState(state)
+function PrintState(state)
 	if state then
 		return "§aEnabled"
 	else
@@ -263,252 +253,6 @@ function printState(state)
 	end
 end
 
-function spawnParticle(pos, color)
-    particle.addParticle("dust", pos, {color[1], color[2], color[3], player.getVelocity().getLength() * 2})
-end
-
----------------------
--- Blink Functions --
---- by  Fran#3814 ---
----------------------
-
--- blink tick
-function blink()
-	-- tick
-	blinkTick = blinkTick + 1
-  
-	-- if is already blinking
-	if isBlinking then
-		-- increase blink frame
-		if lblinkFrame < 4 then
-			lblinkFrame = lblinkFrame + 1
-		end
-  
-		if rblinkFrame < 4 then
-			rblinkFrame = rblinkFrame + 1
-		end
-  
-		-- restart blink if frame is greater than 4
-		if lblinkFrame >= 4 and rblinkFrame >= 4 then
-			isBlinking = false
-			blinkTick  = 0
-		end
-	-- check blink
-	elseif blinkTick >= BLINK_MIN_DELAY and math.random() < BLINK_CHANCE or blinkTick >= BLINK_MAX_DELAY then
-		-- dummy blink
-		if client.isHost() and math.random() < DUMMY_BLINK_CHANCE then
-			ping.blink(math.random() < 0.5, armorEnabled, particlesEnabled)
-		-- normal blink
-		else
-			isBlinking  = true
-			lblinkFrame = 0
-			rblinkFrame = 0
-		end
-	end
-end
-  
--- eyes animation
-function eyesAnim(delta)
-	local eyes = model.Head.Eyes
-  
-	-- eyeballs
-  
-	-- get rot
-	local rotX = (player.getBodyYaw() - player.getRot().y) / 45
-	local rotY = player.getRot().x / 135
-  
-	-- apply
-	eyes.Eyes.setPos(math.lerp(eyes.Eyes.getPos(), vectors.of({0, math.clamp(rotY, -0.45, 0.45), 0}), delta))
-	eyes.Left_Iris.setPos(math.lerp(eyes.Left_Iris.getPos(), vectors.of({math.clamp(rotX, -0.15, 1), rotY, 0}), delta))
-	eyes.Right_Iris.setPos(math.lerp(eyes.Right_Iris.getPos(), vectors.of({math.clamp(rotX, -1, 0.15), rotY, 0}), delta))
-  
-	-- blink
-  
-	-- blink uv
-	local x = math.clamp(lblinkFrame + delta, 0, 4)
-	local lblink = -4 * math.abs(x / 4 - math.floor(x / 4 + 0.5))
-  
-	local x = math.clamp(rblinkFrame + delta, 0, 4)
-	local rblink = -4 * math.abs(x / 4 - math.floor(x / 4 + 0.5))
-  
-	-- set blink uv
-	eyes.Left_Eyelid.setUV({0, lblink / TEXTURE_HEIGHT})
-	eyes.Right_Eyelid.setUV({0, rblink / TEXTURE_HEIGHT})
-end
-
-----------------------
--- Swinging Physics --
--- by  Manuel_#2867 --
-----------------------
-
-do
-    local gravity = 0.1
-    local friction = 0.1
-    local centrifugalForce = 0.2
-
-    local sinr = math.sin
-    local cosr = math.cos
-    local rad = math.rad
-    local deg = math.deg
-    local lerp = math.lerp
-    local atan = math.atan
-    local getVelocity
-    local getPlayerRot
-    local getBodyYaw
-    local getLookDir
-    local playerVelocity
-    local getAnimation
-    local function sin(x)
-        return sinr(rad(x))
-    end
-    local function cos(x)
-        return cosr(rad(x))
-    end
-    -- Returns movement angle relative to look direction (2D top down view, ignores Y)
-    -- Requires velocity vector variable containing player velocity
-    -- 0   : forward
-    -- 45  : left forward
-    -- 90  : left
-    -- 135 : left backwards
-    -- 180 : backwards
-    -- -135: right backwards
-    -- -90 : right
-    -- -45 : right forward
-    local function playerMoveAngle()
-        local lookdir = getLookDir()
-        lookdir.y = 0
-        local m = 90+deg(atan(playerVelocity.z/playerVelocity.x))
-        if playerVelocity.x < 0 then
-            m = m + 180
-        end
-        local l = 90+deg(atan(lookdir.z/lookdir.x))
-        if lookdir.x < 0 then
-            l = l + 180
-        end
-        local ret = l - m
-        if ret ~= ret then
-            return 0
-        else
-            return ret
-        end 
-    end
-    local moveAngle = 0
-    local playerSpeed = 0
-    local _yRotHead = 0
-    local yRotHead = 0
-    local forceHead = 0
-    local downHead = vectors.of({0,0,0})
-    local _yRotBody = 0
-    local yRotBody = 0
-    local forceBody = 0
-    local downBody = vectors.of({0,0,0})
-    function player_init()
-        getVelocity = player.getVelocity
-        getPlayerRot = player.getRot
-        getLookDir = player.getLookDir
-        getBodyYaw = player.getBodyYaw
-        getAnimation = player.getAnimation
-        _yRotHead = getPlayerRot().y
-        yRotHead = _yRotHead
-        _yRotBody = getBodyYaw()
-        yRotBody = _yRotBody
-        playerVelocity = getVelocity()
-        playerVelocity.y = 0
-    end
-    function tick()
-        moveAngle = playerMoveAngle()
-        playerVelocity = getVelocity()
-        playerVelocity.y = 0
-        playerSpeed = playerVelocity.getLength()*6
-
-        local playerRot = getPlayerRot()
-
-        _yRotHead = yRotHead
-        yRotHead = playerRot.y
-        forceHead = (_yRotHead - yRotHead)/8
-        downHead.x = playerRot.x
-
-        _yRotBody = yRotBody
-        yRotBody = getBodyYaw()
-        forceBody = (_yRotBody - yRotBody)/8
-        if getAnimation() == "CROUCHING" then
-            downBody.x = deg(0.5)
-        else
-            downBody.x = 0
-        end
-    end
-    function swingOnHead(part, dir, limits, root, depth)
-        local _rot = vectors.of({0,0,0})
-        local rot = vectors.of({0,0,0})
-        local velocity = vectors.of({0,0,0})
-        if depth == nil then depth = 0 end
-        local fric = friction*math.pow(1.5, depth)
-        function tick()
-            _rot = rot
-
-            local grav
-            if root ~= nil then
-                grav = ((downHead - root.getRot()) - rot) * gravity
-            else
-                grav = (downHead - rot) * gravity
-            end
-            
-            velocity = velocity + grav + vectors.of({
-                sin(dir)*forceHead-cos(moveAngle)*playerSpeed+cos(dir)*math.abs(forceHead)*centrifugalForce,
-                0,
-                cos(dir)*forceHead+sin(moveAngle)*playerSpeed-sin(dir)*math.abs(forceHead)*centrifugalForce
-            })
-            velocity = velocity * (1-fric)
-
-            rot = rot + velocity
-        end
-        if limits ~= nil then function tick()
-            if rot.x < limits[1] then rot.x = limits[1] velocity.x = 0 end
-            if rot.x > limits[2] then rot.x = limits[2] velocity.x = 0 end
-            if rot.y < limits[3] then rot.y = limits[3] velocity.y = 0 end
-            if rot.y > limits[4] then rot.y = limits[4] velocity.y = 0 end
-            if rot.z < limits[5] then rot.z = limits[5] velocity.z = 0 end
-            if rot.z > limits[6] then rot.z = limits[6] velocity.z = 0 end
-        end end
-        function render(delta)
-            part.setRot(lerp(_rot, rot, delta))
-        end
-    end
-    function swingOnBody(part, dir, limits, root, depth)
-        local _rot = vectors.of({0,0,0})
-        local rot = vectors.of({0,0,0})
-        local velocity = vectors.of({0,0,0})
-        if depth == nil then depth = 0 end
-        local fric = friction*math.pow(1.5, depth)
-        function tick()
-            _rot = rot
-
-            local grav
-            if root ~= nil then
-                grav = ((downBody - root.getRot()) - rot) * gravity
-            else
-                grav = (downBody - rot) * gravity
-            end
-
-            velocity = velocity + grav + vectors.of({
-                sin(dir)*forceBody-cos(moveAngle)*playerSpeed+cos(dir)*math.abs(forceBody)*centrifugalForce,
-                0,
-                cos(dir)*forceBody+sin(moveAngle)*playerSpeed-sin(dir)*math.abs(forceBody)*centrifugalForce
-            })
-            velocity = velocity * (1-fric)
-
-            rot = rot + velocity
-        end
-        if limits ~= nil then function tick()
-            if rot.x < limits[1] then rot.x = limits[1] velocity.x = 0 end
-            if rot.x > limits[2] then rot.x = limits[2] velocity.x = 0 end
-            if rot.y < limits[3] then rot.y = limits[3] velocity.y = 0 end
-            if rot.y > limits[4] then rot.y = limits[4] velocity.y = 0 end
-            if rot.z < limits[5] then rot.z = limits[5] velocity.z = 0 end
-            if rot.z > limits[6] then rot.z = limits[6] velocity.z = 0 end
-        end end
-        function render(delta)
-            part.setRot(lerp(_rot, rot, delta))
-        end
-    end
+function SpawnParticle(pos, color)
+    particles:newParticle("minecraft:dust " .. color[1] .. " " .. color[2] .. " " .. color[3] .. " " .. "1.0", pos, player:getVelocity():length() * 2)
 end

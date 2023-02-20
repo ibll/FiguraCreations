@@ -1,6 +1,8 @@
-models:setPrimaryTexture("SKIN")
+Blink = require("blink")
 
 function events.entity_init()
+	vanilla_model.PLAYER:setVisible(false)
+    
     Tick = 0
 
 	-- action wheel constants
@@ -58,18 +60,64 @@ function events.tick()
         Tick = 0
     end
     SyncTick()
+
+    Blink.tick()
 end
 
-function events.render()
-    function ShowBust()
-		local BUST = models.Bust.Body
+function events.render(delta, context)
+    if context == "RENDER" then Blink.render(delta) end
+
+    function BustClipping()
+		local BUST = models.player_model.Body.Bust
         if not BustEnabled then return BUST:setVisible(false) end
 		if player:getItem(5).id == "minecraft:air" then return BUST:setVisible(true) end
 		if player:getItem(5).id == "minecraft:elytra" then return BUST:setVisible(true) end
 		if not vanilla_model.CHESTPLATE:getVisible() then return BUST:setVisible(true) end
 		BUST:setVisible(false)
 	end
-	ShowBust()
+	BustClipping()
+
+    function BootClipping()
+        function ModelVisibility(bool)
+            models.player_model.LeftLeg.Lower4.Heart6:setVisible(bool)
+            models.player_model.RightLeg.Lower3.Heart5:setVisible(bool)
+        end
+
+        if player:getItem(3).id == "minecraft:air" then return ModelVisibility(true) end
+        if not vanilla_model.BOOTS:getVisible() then return ModelVisibility(true) end
+        ModelVisibility(false)
+    end
+    BootClipping()
+
+    function LeggingClipping()
+        function ModelVisibility(bool)
+            models.player_model.LeftLeg.Skirt2:setVisible(bool)
+            models.player_model.RightLeg.Skirt1:setVisible(bool)
+            models.player_model.LeftLeg.Lower4.Heart4:setVisible(bool)
+            models.player_model.RightLeg.Lower3.Heart3:setVisible(bool)
+        end
+
+        if player:getItem(4).id == "minecraft:air" then return ModelVisibility(true) end
+        if not vanilla_model.LEGGINGS:getVisible() then return ModelVisibility(true) end
+        ModelVisibility(false)
+    end
+    LeggingClipping()
+
+    function HelmetClipping()
+        function ModelVisibility(bool)
+            models.player_model.Head.Hat:setVisible(bool)
+            if bool then
+                nameplate.ENTITY:pos(0, 0.25, 0)
+            else
+                nameplate.ENTITY:pos(0, 0, 0)
+            end
+        end
+
+        if player:getItem(6).id == "minecraft:air" then return ModelVisibility(true) end
+        if not vanilla_model.HELMET:getVisible() then return ModelVisibility(true) end
+        ModelVisibility(false)
+    end
+    HelmetClipping()
 end
 
 ---------------
