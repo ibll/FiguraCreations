@@ -36,42 +36,59 @@ end
 
 function RayRender(delta, context)
     if context == "FIRST_PERSON" then return end
+    TiltRot = (-player:getRot(delta).x - HeadBone:getRot().x)
+    EyeRot = (player:getBodyYaw(delta) - player:getRot(delta).y)/2
+    PlayerVel = vectors.rotateAroundAxis(player:getBodyYaw(delta),player:getVelocity(),vec(0, 1, 0))*75
+
+    IdleOffset = vectors.vec3(
+        math.cos(world.getTime(delta)/20),
+        math.sin(world.getTime(delta)/25),
+        math.sin(world.getTime(delta)/30)
+    )
 
     function LeftUp()
         LeftUp = animations.Ray.LeftUp
         LeftArm = RootBone.LeftArm
         if player:getItem(2).id == "minecraft:air" then
+            LeftArm.LeftUpperArm:setOffsetRot((IdleOffset*5)+(vec(PlayerVel.z/2, 0, math.abs(PlayerVel.z))))
+            LeftArm.LeftUpperArm.LeftLowerArm:setOffsetRot(IdleOffset*5)
+            LeftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftFingers:setOffsetRot(0, IdleOffset.y*-20, 0)
+            LeftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftThumb:setOffsetRot(0, 0, IdleOffset.z*-20)
+
             if (LeftUp:getPlayState() == "PLAYING") then return end
-            --LeftArm:parentType("BODY")
             LeftUp:play()
         else
             if not LeftUp:getPlayState() == "PLAYING" then return end
-            --LeftArm:parentType("LEFT_ARM")
             LeftUp:stop()
         end
     end
     LeftUp()
 
     function RightUp()
+        RightUp = animations.Ray.RightUp
+        RightArm = RootBone.RightArm
         if player:getItem(1).id == "minecraft:air" then
-            if (animations.Ray.RightUp:getPlayState() == "PLAYING") then return end
-            animations.Ray.RightUp:play()
+            RightArm.RightUpperArm:setOffsetRot((IdleOffset*5)+(vec(PlayerVel.z/2, 0, -math.abs(PlayerVel.z))))
+            RightArm.RightUpperArm.RightLowerArm:setOffsetRot(IdleOffset*-5)
+            RightArm.RightUpperArm.RightLowerArm.RightHand.RightFingers:setOffsetRot(0, IdleOffset.y*20, 0)
+            RightArm.RightUpperArm.RightLowerArm.RightHand.RightThumb:setOffsetRot(0, 0, IdleOffset.z*20)
+
+            if (RightUp:getPlayState() == "PLAYING") then return end
+            RightUp:play()
         else
-            if not (animations.Ray.RightUp:getPlayState() == "PLAYING") then return end
-            animations.Ray.RightUp:stop()
+            if not (RightUp:getPlayState() == "PLAYING") then return end
+            RightUp:stop()
         end
     end
     RightUp()
-
-    TiltRot = (-player:getRot(delta).x - HeadBone:getRot().x)
-    EyeRot = (player:getBodyYaw(delta) - player:getRot(delta).y)/2
-    PlayerVel = vectors.rotateAroundAxis(player:getBodyYaw(),player:getVelocity(),vec(0, 1, 0))*75
 
     -- When swimming/flying, player model does not face where the camera is looking by default.
     if player:getBoundingBox().y <= 1 then HeadXRotExtraDegrees = 90 else HeadXRotExtraDegrees = 0 end
     HeadBone:setRot(math.lerp(HeadBone:getRot(),vec(math.clamp(-PlayerVel.z, -25, 100) + HeadXRotExtraDegrees, 0, PlayerVel.x),delta))
 
-    
+    RootBone:setPos(IdleOffset)
+    nameplate.ENTITY:setPos(IdleOffset/32)
+
     TiltBone:setRot(math.lerp(TiltBone:getRot(),vec(math.clamp(TiltRot,-25,25),0,0),delta))
     TiltBone.Eye:setRot(math.lerp(TiltBone.Eye:getRot(),vec(0,math.clamp(EyeRot,-15,15),0),delta))
 end
