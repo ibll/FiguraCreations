@@ -42,21 +42,11 @@ function events.tick()
 		FALL_ANIMATION:play()
 	end
 
-	Item = player:getItem(1).id
-
-	if Item ~= LastHeldItem then
-		HeldItemTimer = 5
-		LastHeldItem = Item
-		if Item == "minecraft:air" then
-			models.model.RIGHT_ARM:setVisible(false)
-		end
-	end
-
-	if HeldItemTimer == 0 then
+	if renderer:isFirstPerson() then
+		models.model.RIGHT_ARM:setVisible(false)
+	else
 		models.model.RIGHT_ARM:setVisible(true)
 	end
-
-	HeldItemTimer = HeldItemTimer - 1
 end
 
 function events.render(delta, context)
