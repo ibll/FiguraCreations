@@ -15,7 +15,7 @@ function events.entity_init()
 	vanilla_model.ARMOR:setVisible(false)
 	vanilla_model.ELYTRA:setVisible(false)
 
-	nameplate.ENTITY:setPos(0, -1, 0)
+	nameplate.ENTITY:setPivot(0, 1, 0)
 end
 
 function events.tick()
@@ -41,15 +41,15 @@ function events.tick()
 	else
 		FALL_ANIMATION:play()
 	end
+end
 
-	if renderer:isFirstPerson() then
+function events.render(delta, context)
+	if context == "FIRST_PERSON" then
 		models.model.RIGHT_ARM:setVisible(false)
 	else
 		models.model.RIGHT_ARM:setVisible(true)
 	end
-end
 
-function events.render(delta, context)
 	--HeadRot = player:getRot()
 	HeadRot = vec(player:getRot().x, -(player:getBodyYaw() - player:getRot().y))
 	if HeadRot.x < 0 then
