@@ -1,14 +1,14 @@
 # FiguraCreations
 
 ## Crab
-[Folder](/Avatars/Crab/) | [Download](https://github.dev/TheGoodDude22/FiguraCreations/blob/main/Avatars/Crab/Crab.zip)
+[Folder](/Avatars/Crab/) | [Download](https://github.com/TheGoodDude22/FiguraCreations/raw/main/Avatars/Crab/Crab.zip)
 <p float=left align=middle>
     <img align=top src="Assets/cr01.png" width=49%>
     <img align=top src="Assets/cr02.png" width=49%>
 </p>
 
 ## Lovely
-[Folder](/Avatars/Lovely/) | [Download](https://github.dev/TheGoodDude22/FiguraCreations/blob/main/Avatars/Lovely/Lovely.zip)
+[Folder](/Avatars/Lovely/) | [Download](https://github.com/TheGoodDude22/FiguraCreations/raw/main/Avatars/Lovely/Lovely.zip)
 
 Based off of the Fortnite skin
 <p float=left align=middle>
@@ -17,7 +17,7 @@ Based off of the Fortnite skin
 </p>
 
 ## Madeline
-[Folder](/Avatars/MadelineCeleste/) | [Download](https://github.dev/TheGoodDude22/FiguraCreations/blob/main/Avatars/MadelineCeleste/MadelineCeleste.zip)
+[Folder](/Avatars/MadelineCeleste/) | [Download](https://github.com/TheGoodDude22/FiguraCreations/raw/main/Avatars/MadelineCeleste/MadelineCeleste.zip)
 
 From Celeste
 <p float=left align=middle>
