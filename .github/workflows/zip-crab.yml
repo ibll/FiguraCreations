@@ -1,0 +1,19 @@
+name: Zip Crab
+
+on:
+  push:
+    branches:
+    - main
+    - auto-prepare-downloads
+    paths:
+    - Avatars/Crab/**
+
+jobs:
+  zip-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: vimtor/action-zip@v1
+        with:
+          files: Avatars/Crab
+          dest: Downloads/Crab.zip
