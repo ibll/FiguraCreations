@@ -9,6 +9,9 @@ FALL_ANIMATION = animations.model.fall
 HIDE_ANIMATION = animations.model.hide
 UNHIDE_ANIMATION = animations.model.unhide
 
+ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
+DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
+
 function events.entity_init()
 	LastHeldItem = "minecraft:air"
 	HeldItemTimer = 5
