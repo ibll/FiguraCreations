@@ -78,11 +78,11 @@ function BlinkAPI.eyesAnim(delta)
 	-- blink
 
 	-- blink uv
-	local X = math.clamp(LblinkFrame + delta, 0, 4)
-	local lblink = -4 * math.abs(X / 4 - math.floor(X / 4 + 0.5))
+	local LX = math.clamp(LblinkFrame + delta, 0, 4)
+	local lblink = -4 * math.abs(LX / 4 - math.floor(LX / 4 + 0.5))
 
-	local X = math.clamp(RblinkFrame + delta, 0, 4)
-	local rblink = -4 * math.abs(X / 4 - math.floor(X / 4 + 0.5))
+	local RX = math.clamp(RblinkFrame + delta, 0, 4)
+	local rblink = -4 * math.abs(RX / 4 - math.floor(RX / 4 + 0.5))
 
 	-- set blink uv
 	eyes.Left_Eyelid:setUV(0, lblink / TEXTURE_HEIGHT)

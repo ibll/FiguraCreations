@@ -34,8 +34,8 @@ end
 local function playerMoveAngle()
     local lookdir = player:getLookDir()
     lookdir.y = 0
-    local m = 90+deg(atan(playerVelocity.z/playerVelocity.x))
-    if playerVelocity.x < 0 then
+    local m = 90+deg(atan(PlayerVelocity.z/PlayerVelocity.x))
+    if PlayerVelocity.x < 0 then
         m = m + 180
     end
     local l = 90+deg(atan(lookdir.z/lookdir.x))
@@ -66,16 +66,16 @@ events.ENTITY_INIT:register(function()
     yRotHead = _yRotHead
     _yRotBody = player:getBodyYaw()
     yRotBody = _yRotBody
-    playerVelocity = player:getVelocity()
-    playerVelocity.y = 0
+    PlayerVelocity = player:getVelocity()
+    PlayerVelocity.y = 0
 end)
 
 events.TICK:register(function ()
     moveAngle = playerMoveAngle()
 
-    playerVelocity = player:getVelocity()
-    playerVelocity.y = 0
-    playerSpeed = playerVelocity:length()*6
+    PlayerVelocity = player:getVelocity()
+    PlayerVelocity.y = 0
+    playerSpeed = PlayerVelocity:length()*6
 
     local playerRot = player:getRot()
 
