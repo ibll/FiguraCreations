@@ -1,5 +1,3 @@
--- Blink = require("blink")
-
 function events.entity_init()
     RootBone = models.Ray.root
     HeadBone = RootBone.Main
