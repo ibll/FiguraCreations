@@ -62,13 +62,34 @@ end
 -- eyes animation
 function BlinkAPI.render(delta)
 	-- get rot
-	local rotX = -(player:getBodyYaw() - player:getRot().y) / 45
+	local bodyYawRaw = player:getBodyYaw()
+	local bodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) - 180
+	local headYawRaw = player:getRot().y
+	local headYaw = (headYawRaw - 360 * math.floor( headYawRaw / (360))) - 180
+
+	local rotX = -(bodyYaw - headYaw) / 45
 	local rotY = -player:getRot().x / 135
+
+	-- print(player:getBodyYaw() - player:getRot().y) -- should be -50 through 50
+	-- print(player:getBodyYaw())
+	-- print(player:getRot().y)
+	print("Body: " .. bodyYaw .. " Head: " .. headYaw)
 
 	-- apply
     eyes.Eyes:setPos(math.lerp(eyes.Eyes:getPos(), vec(0, math.clamp(rotY, -0.45, 0.45), 0), delta))
 	eyes.Right_Iris:setPos(math.lerp(eyes.Right_Iris:getPos(), vec(math.clamp(rotX, -0.15, 1), rotY, 0), delta))
-	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta))
+	
+	local leftEyeVec = vec(
+		math.clamp(
+			rotX,
+			-1,
+			0.15
+		),
+		rotY,
+		0
+	)
+	
+	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), leftEyeVec, delta) )
 
 	-- blink uv
 	local LX = math.clamp(LblinkFrame + delta, 0, 4)
