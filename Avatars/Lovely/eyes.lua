@@ -1,7 +1,7 @@
 -- Original eye avatar template by Fran#3814
 
 -- MODIFY THESE!!!
-local eyes = models.model.Head.Eyes
+local eyes = models.player_model.Head.Eyes
 TEXTURE_HEIGHT  = 64    -- texture size (height), in pixels
 
 -- blink constants

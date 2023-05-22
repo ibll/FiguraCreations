@@ -81,12 +81,12 @@ function events.tick()
 		IsJumping = false
 	end
 
-	Eyes.blink()
+	Eyes.tick()
 	VanillaParts()
 end
 
 function events.render(delta, context)
-	if context == "RENDER" then Eyes.eyesAnim(delta) end
+	if context == "RENDER" then Eyes.render(delta) end
 	if ParticlesEnabled then Particles() end
 	CustomParts()
 end

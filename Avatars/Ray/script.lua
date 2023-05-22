@@ -34,9 +34,22 @@ end
 
 function RayRender(delta, context)
     if context == "FIRST_PERSON" then return end
+
+    -- rot tracking
+    local headYaw = player:getRot(delta).y
+	local bodyYawRaw = player:getBodyYaw(delta)
+    BodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) + math.floor(headYaw/360) * 360
+	if math.abs(BodyYaw - headYaw) >= 180 then
+		if BodyYaw > headYaw then
+			BodyYaw = BodyYaw - 360
+		elseif BodyYaw < headYaw then
+			BodyYaw = BodyYaw + 360
+		end
+	end
+
     TiltRot = (-player:getRot(delta).x - HeadBone:getRot().x)
-    EyeRot = (player:getBodyYaw(delta) - player:getRot(delta).y)/2
-    PlayerVel = vectors.rotateAroundAxis(player:getBodyYaw(delta),player:getVelocity(),vec(0, 1, 0))*75
+    EyeRot = (BodyYaw - headYaw)/2
+    PlayerVel = vectors.rotateAroundAxis(BodyYaw,player:getVelocity(),vec(0, 1, 0))*75
 
     IdleOffset = vectors.vec3(
         math.cos(world.getTime(delta)/20),
