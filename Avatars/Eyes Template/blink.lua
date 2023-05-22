@@ -62,34 +62,34 @@ end
 -- eyes animation
 function BlinkAPI.render(delta)
 	-- get rot
+	local headYaw = player:getRot().y
 	local bodyYawRaw = player:getBodyYaw()
-	local bodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) - 180
-	local headYawRaw = player:getRot().y
-	local headYaw = (headYawRaw - 360 * math.floor( headYawRaw / (360))) - 180
 
-	local rotX = -(bodyYaw - headYaw) / 45
+	-- correcting body yaw snapping when turning quickly
+	-- im so sorry this is a mess, please make it better if you can
+
+	-- to explain the bug, bodyYawRaw will get offset from headYaw by 360° pos or neg if you turn too quickly.
+	-- because the body snaps to the head and doesnt care if your neck is turned a ridiculous amount
+	-- this corrects BodyYaw to be within the "expected" range relative to headYaw!
+	-- for example: if your neck is turned 5000 degrees relative to your body, its actually only 40 degrees away
+
+	BodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) + math.floor(headYaw/360) * 360
+
+	if math.abs(BodyYaw - headYaw) >= 180 then
+		if BodyYaw > headYaw then
+			BodyYaw = BodyYaw - 360
+		elseif BodyYaw < headYaw then
+			BodyYaw = BodyYaw + 360
+		end
+	end
+
+	local rotX = -(BodyYaw - headYaw) / 45
 	local rotY = -player:getRot().x / 135
-
-	-- print(player:getBodyYaw() - player:getRot().y) -- should be -50 through 50
-	-- print(player:getBodyYaw())
-	-- print(player:getRot().y)
-	print("Body: " .. bodyYaw .. " Head: " .. headYaw)
 
 	-- apply
     eyes.Eyes:setPos(math.lerp(eyes.Eyes:getPos(), vec(0, math.clamp(rotY, -0.45, 0.45), 0), delta))
 	eyes.Right_Iris:setPos(math.lerp(eyes.Right_Iris:getPos(), vec(math.clamp(rotX, -0.15, 1), rotY, 0), delta))
-	
-	local leftEyeVec = vec(
-		math.clamp(
-			rotX,
-			-1,
-			0.15
-		),
-		rotY,
-		0
-	)
-	
-	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), leftEyeVec, delta) )
+	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta) )
 
 	-- blink uv
 	local LX = math.clamp(LblinkFrame + delta, 0, 4)
