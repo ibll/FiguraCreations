@@ -74,8 +74,25 @@ function events.render(delta, context)
 		models.model.RIGHT_ARM:setVisible(true)
 	end
 
-	--HeadRot = player:getRot()
-	HeadRot = vec(player:getRot().x, -(player:getBodyYaw() - player:getRot().y))
+	-- get rot
+	local headYaw = player:getRot().y
+	local bodyYawRaw = player:getBodyYaw()
+
+	-- correcting body yaw snapping when turning quickly
+
+	BodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) + math.floor(headYaw/360) * 360
+
+	if math.abs(BodyYaw - headYaw) >= 180 then
+		if BodyYaw > headYaw then
+			BodyYaw = BodyYaw - 360
+		elseif BodyYaw < headYaw then
+			BodyYaw = BodyYaw + 360
+		end
+	end
+
+
+
+	HeadRot = vec(player:getRot().x, -(BodyYaw - headYaw))
 	if HeadRot.x < 0 then
 		models.model.HEAD.BASE.EYES:setRot(-HeadRot.x/3, -HeadRot.y * 0.75, 0)
 	else

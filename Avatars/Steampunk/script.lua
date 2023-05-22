@@ -1,6 +1,6 @@
 vanilla_model.PLAYER:setVisible(false)
 
-Blink = require("blink")
+Eyes = require("eyes")
 Basics = require("basics")
 
 function events.entity_init()
@@ -8,11 +8,11 @@ function events.entity_init()
 end
 
 function events.tick()
-    Blink.tick()
+    Eyes.tick()
     Basics.tick()
 end
 
 function events.render(delta, context)
-    Blink.render(delta)
+    Eyes.render(delta)
     Basics.render()
 end

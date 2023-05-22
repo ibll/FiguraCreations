@@ -1,5 +1,5 @@
 Swing = require("swing")
-Blink = require("blink")
+Eyes = require("eyes")
 
 ----------------------
 -- Figura Functions --
@@ -81,12 +81,12 @@ function events.tick()
 		IsJumping = false
 	end
 
-	Blink.blink()
+	Eyes.blink()
 	VanillaParts()
 end
 
 function events.render(delta, context)
-	if context == "RENDER" then Blink.eyesAnim(delta) end
+	if context == "RENDER" then Eyes.eyesAnim(delta) end
 	if ParticlesEnabled then Particles() end
 	CustomParts()
 end

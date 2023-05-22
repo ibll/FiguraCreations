@@ -1,7 +1,7 @@
 -- Original eye avatar template by Fran#3814
 
 -- Make sure you edit constants at the top of blink.lua!
-Blink = require("blink")
+Eyes = require("eyes")
 
 function events.entity_init()
   vanilla_model.INNER_LAYER:setVisible(false)
@@ -9,9 +9,9 @@ function events.entity_init()
 end
 
 function events.tick()
-  Blink.tick()
+  Eyes.tick()
 end
 
 function events.render(delta, context)
-  Blink.render(delta)
+  Eyes.render(delta)
 end

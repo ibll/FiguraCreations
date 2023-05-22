@@ -1,4 +1,4 @@
-Blink = require("blink")
+Eyes = require("eyes")
 
 function events.entity_init()
 	vanilla_model.PLAYER:setVisible(false)
@@ -61,11 +61,11 @@ function events.tick()
     end
     SyncTick()
 
-    Blink.tick()
+    Eyes.tick()
 end
 
 function events.render(delta, context)
-    if context == "RENDER" then Blink.render(delta) end
+    if context == "RENDER" then Eyes.render(delta) end
 
     function BustClipping()
 		local BUST = models.player_model.Body.Bust

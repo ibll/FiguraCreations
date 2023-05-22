@@ -1,11 +1,7 @@
----------------------
--- Blink Functions --
---- by  Fran#3814 ---
----------------------
+-- Original eye avatar template by Fran#3814
 
--- IMPORTANT VARIABLES
-local eyes = models.player_model.Head.Eyes
-TEXTURE_WIDTH   = 128    -- texture size (width), in pixels
+-- MODIFY THESE!!!
+local eyes = models.model.Head.Eyes
 TEXTURE_HEIGHT  = 64    -- texture size (height), in pixels
 
 -- blink constants
@@ -23,8 +19,7 @@ BlinkTick   = 0
 
 BlinkAPI = {}
 
--- blink tick
-function BlinkAPI.blink(...)
+function BlinkAPI.tick()
 
     function pings.blink(dummy, eye)
         IsBlinking = true
@@ -65,17 +60,36 @@ function BlinkAPI.blink(...)
 end
 
 -- eyes animation
-function BlinkAPI.eyesAnim(delta)
+function BlinkAPI.render(delta)
 	-- get rot
-	local rotX = -(player:getBodyYaw() - player:getRot().y) / 45
+	local headYaw = player:getRot().y
+	local bodyYawRaw = player:getBodyYaw()
+
+	-- correcting body yaw snapping when turning quickly
+	-- im so sorry this is a mess, please make it better if you can
+
+	-- to explain the bug, bodyYawRaw will get offset from headYaw by 360° pos or neg if you turn too quickly.
+	-- because the body snaps to the head and doesnt care if your neck is turned a ridiculous amount
+	-- this corrects BodyYaw to be within the "expected" range relative to headYaw!
+	-- for example: if your neck is turned 5000 degrees relative to your body, its actually only 40 degrees away
+
+	BodyYaw = (bodyYawRaw - 360 * math.floor( bodyYawRaw / (360))) + math.floor(headYaw/360) * 360
+
+	if math.abs(BodyYaw - headYaw) >= 180 then
+		if BodyYaw > headYaw then
+			BodyYaw = BodyYaw - 360
+		elseif BodyYaw < headYaw then
+			BodyYaw = BodyYaw + 360
+		end
+	end
+
+	local rotX = -(BodyYaw - headYaw) / 45
 	local rotY = -player:getRot().x / 135
 
 	-- apply
     eyes.Eyes:setPos(math.lerp(eyes.Eyes:getPos(), vec(0, math.clamp(rotY, -0.45, 0.45), 0), delta))
 	eyes.Right_Iris:setPos(math.lerp(eyes.Right_Iris:getPos(), vec(math.clamp(rotX, -0.15, 1), rotY, 0), delta))
-	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta))
-
-	-- blink
+	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta) )
 
 	-- blink uv
 	local LX = math.clamp(LblinkFrame + delta, 0, 4)
