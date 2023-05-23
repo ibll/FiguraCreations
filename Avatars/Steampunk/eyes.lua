@@ -1,12 +1,8 @@
----------------------
--- Blink Functions --
---- by  Fran#3814 ---
----------------------
+--  Modified from Fran#3814's eye template
 
--- IMPORTANT VARIABLES
-local eyes = models.player_model.Head.Eyes
-TEXTURE_WIDTH   = 64    -- texture size (width), in pixels
-TEXTURE_HEIGHT  = 64    -- texture size (height), in pixels
+-- MODIFY THESE!!!
+local eyes = models.steampunk.Head.Eyes
+TEXTURE_HEIGHT  = 128    -- texture size (height), in pixels
 
 -- blink constants
 BLINK_MIN_DELAY = 70    -- minimum delay for blink, in ticks
@@ -28,8 +24,8 @@ function BlinkAPI.tick()
     function pings.blink(dummy, eye)
         IsBlinking = true
         if dummy then
-            LblinkFrame = eye and DUMMY_BLINK_DELAY or 0
-            RblinkFrame = not eye and DUMMY_BLINK_DELAY or 0
+            LblinkFrame = eye and -DUMMY_BLINK_DELAY or 0
+            RblinkFrame = not eye and -DUMMY_BLINK_DELAY or 0
         else
             LblinkFrame = 0
             RblinkFrame = 0
@@ -66,15 +62,14 @@ end
 -- eyes animation
 function BlinkAPI.render(delta)
 	-- get rot
-	local rotX = -(player:getBodyYaw() - player:getRot().y) / 45
+	local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+	local rotX = headBodyOffset / 45
 	local rotY = -player:getRot().x / 135
 
 	-- apply
     eyes.Eyes:setPos(math.lerp(eyes.Eyes:getPos(), vec(0, math.clamp(rotY, -0.45, 0.45), 0), delta))
 	eyes.Right_Iris:setPos(math.lerp(eyes.Right_Iris:getPos(), vec(math.clamp(rotX, -0.15, 1), rotY, 0), delta))
-	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta))
-
-	-- blink
+	eyes.Left_Iris:setPos(math.lerp(eyes.Left_Iris:getPos(), vec(math.clamp(rotX, -1, 0.15), rotY, 0), delta) )
 
 	-- blink uv
 	local LX = math.clamp(LblinkFrame + delta, 0, 4)

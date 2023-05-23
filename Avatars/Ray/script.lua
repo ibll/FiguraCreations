@@ -1,5 +1,3 @@
--- Blink = require("blink")
-
 function events.entity_init()
     RootBone = models.Ray.root
     HeadBone = RootBone.Main
@@ -36,8 +34,10 @@ end
 
 function RayRender(delta, context)
     if context == "FIRST_PERSON" then return end
+
     TiltRot = (-player:getRot(delta).x - HeadBone:getRot().x)
-    EyeRot = (player:getBodyYaw(delta) - player:getRot(delta).y)/2
+    HeadBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+    EyeRot = -HeadBodyOffset/2
     PlayerVel = vectors.rotateAroundAxis(player:getBodyYaw(delta),player:getVelocity(),vec(0, 1, 0))*75
 
     IdleOffset = vectors.vec3(
@@ -90,5 +90,5 @@ function RayRender(delta, context)
     nameplate.ENTITY:setPos(IdleOffset/32)
 
     TiltBone:setRot(math.lerp(TiltBone:getRot(),vec(math.clamp(TiltRot,-25,25),0,0),delta))
-    TiltBone.Eye:setRot(math.lerp(TiltBone.Eye:getRot(),vec(0,math.clamp(EyeRot,-15,15),0),delta))
+    TiltBone.Eye:setRot(math.lerp(TiltBone.Eye:getRot(),vec(0,math.clamp(EyeRot,-50,50),0),delta))
 end

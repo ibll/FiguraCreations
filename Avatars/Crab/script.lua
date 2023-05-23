@@ -1,5 +1,3 @@
--- by TheGoodDude#6142
-
 ----------------------
 -- Figura Functions --
 ----------------------
@@ -76,18 +74,14 @@ function events.render(delta, context)
 		models.model.RIGHT_ARM:setVisible(true)
 	end
 
-	--HeadRot = player:getRot()
-	HeadRot = vec(player:getRot().x, -(player:getBodyYaw() - player:getRot().y))
+	local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+
+	HeadRot = vec(player:getRot().x, headBodyOffset)
+
 	if HeadRot.x < 0 then
 		models.model.HEAD.BASE.EYES:setRot(-HeadRot.x/3, -HeadRot.y * 0.75, 0)
 	else
 		models.model.HEAD.BASE.EYES:setRot(HeadRot.x/2, -HeadRot.y * 0.75, 0)
-	end
-
-	if HeadRot.x < 0 then
-		--models.model.HEAD.BASE.EYES:setRot(-HeadRot.x/3, 0 - HeadRot.y * 0.75, 0)
-	else
-		--models.model.HEAD.BASE.EYES:setRot( HeadRot.x/2, 0 - HeadRot.y * 0.75, 0)
 	end
 
 	if HeadRot.x < 0 then
