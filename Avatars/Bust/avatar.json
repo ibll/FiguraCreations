@@ -3,7 +3,8 @@
   "authors": [
 	  "github.com/ibll"
   ],
-  "autoScripts": [
+  "color": "#64F",
+  "scripts": [
     "script"
   ]
 }

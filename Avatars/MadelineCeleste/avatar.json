@@ -1,7 +1,8 @@
 {
   "name": "Madeline Celeste",
   "author": "github.com/ibll",
-  "script": [
+  "color": "#64F",
+  "scripts": [
     "script"
   ]
 }

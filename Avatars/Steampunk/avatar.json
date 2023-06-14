@@ -1,12 +1,13 @@
 {
-	"name": "Steampunk Girl",
-	"authors": [
-		"github.com/ibll"
-	],
-	"autoAnims": [
-		"steampunk.machines_idle"
-	],
-	"autoScripts": [
-		"script"
-	]
+  "name": "Steampunk Girl",
+  "authors": [
+    "github.com/ibll"
+  ],
+  "color": "#64F",
+  "scripts": [
+    "script"
+  ],
+  "autoAnims": [
+    "steampunk.machines_idle"
+  ]
 }

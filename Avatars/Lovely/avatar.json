@@ -1,7 +1,10 @@
 {
   "name": "Lovely",
-  "author": "github.com/ibll",
-  "script": [
+  "authors": [
+    "github.com/ibll"
+  ],
+  "color": "#64F",
+  "scripts": [
     "script"
   ]
 }
