@@ -81,7 +81,7 @@ function ModelPos()
         models.model:setPos(BlockPos)
 
         if SoundEffectPlayed == false then
-            sounds:playSound("minecraft:ui.button.click", player:getPos(), 1, 2, false)
+            sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.25, 2, false)
             SoundEffectPlayed = true
         end
     else
