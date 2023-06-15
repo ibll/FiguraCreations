@@ -1,14 +1,17 @@
+ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
+DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
+
 -- figura functions
 
 function events.entity_init()
     -- setup
-    vanilla_model.ALL:setVisible(false)
-    renderer:setShadowRadius(0)
-    nameplate.ENTITY:setVisible(false)
+    VisibleAsProp(true)
 
     -- vars
     SyncTick = 0
     SnapMode = "Rounded"
+    SeekerEnabled = false
+    SeekerApplied = false
     TicksInSameBlock = 0
     SoundEffectPlayed = false
 
@@ -20,14 +23,39 @@ function events.entity_init()
         :item("minecraft:ender_pearl")
         :title("Snap Mode: Rounded")
         :onLeftClick(CycleSnapMode)
+
+    SeekerToggleAction = ActionWheelPg1:newAction()
+		:item("minecraft:grass_block")
+		:title("Current Mode: Prop")
+		:color(DISABLED_COLOR)
+		:onToggle(ToggleSeeker)
+        :toggleItem("minecraft:netherite_sword")
+		:toggleTitle("Current Mode: Seeker")
+		:toggleColor(ENABLED_COLOR)
+    SeekerToggleAction:setToggled(SeekerEnabled)
 end
 
 function events.tick()
-    ModelPos()
-    Sync()
+    if SeekerEnabled then
+        if not SeekerApplied then VisibleAsProp(false) end
+    else
+        if SeekerApplied then VisibleAsProp(true) end
+        ModelPos()
+    end
+    SyncTimer()
 end
 
 -- helpers
+
+function VisibleAsProp(state)
+    SeekerApplied = not state
+
+    vanilla_model.ALL:setVisible(not state)
+    nameplate.ENTITY:setVisible(not state)
+    models.model.root:setVisible(state)
+    if state == true then ShadowSize = 0 else ShadowSize = 0.5 end
+    renderer:setShadowRadius(ShadowSize)
+end
 
 function ModelPos() 
     local pos = player:getPos()
@@ -80,8 +108,14 @@ function CycleSnapMode()
         SnapModeAction:item("minecraft:ender_pearl")
     end
     config:save("SnapMode", SnapMode)
-    pings.sync(SnapMode)
+    Sync()
     PrintState("Snapping",  SnapMode)
+end
+
+function ToggleSeeker(state)
+	PrintState("Seeker", state)
+	SeekerEnabled = state
+	Sync()
 end
 
 function PrintState(string, state)
@@ -95,16 +129,21 @@ function PrintState(string, state)
     print(string .. ": " .. (State(state)))
 end
 
-function Sync()
+function SyncTimer()
     SyncTick = SyncTick + 1
     if SyncTick < 200 then return end
     if not host:isHost() then return end
-    pings.sync(SnapMode)
+    Sync()
     SyncTick = 0
+end
+
+function Sync()
+    pings.sync(SnapMode, SeekerEnabled)
 end
 
 -- pings
 
-function pings.sync(SnapState)
+function pings.sync(SnapState, SeekerState)
     SnapMode = SnapState
+    SeekerEnabled = SeekerState
 end
