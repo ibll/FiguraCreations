@@ -105,7 +105,7 @@ function events.render(delta, context)
 
     function HelmetClipping()
         function ModelVisibility(bool)
-            models.player_model.Head.Hat:setVisible(bool)
+            models.player_model.Noggin.Hat:setVisible(bool)
             if bool then
                 nameplate.ENTITY:pos(0, 0.25, 0)
             else
@@ -118,6 +118,14 @@ function events.render(delta, context)
         ModelVisibility(false)
     end
     HelmetClipping()
+
+    function HeadRot()
+        VanillaHeadRot = vanilla_model.HEAD:getRot()
+        local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+        models.player_model.Noggin:setRot(headBodyOffset, VanillaHeadRot.y, VanillaHeadRot.z)
+        models.player_model.Noggin:setPos(vanilla_model.HEAD:getPos())
+    end
+    HeadRot()
 end
 
 ---------------

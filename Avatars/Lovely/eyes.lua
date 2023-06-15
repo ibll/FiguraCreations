@@ -1,7 +1,7 @@
 --  Modified from Fran#3814's eye template
 
 -- MODIFY THESE!!!
-local eyes = models.player_model.Head.Eyes
+local eyes = models.player_model.Noggin.Eyes
 TEXTURE_HEIGHT  = 64    -- texture size (height), in pixels
 
 -- blink constants

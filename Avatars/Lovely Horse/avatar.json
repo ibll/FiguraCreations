@@ -1,0 +1,10 @@
+{
+  "name": "Lovely Horse",
+  "authors": [
+    "github.com/ibll"
+  ],
+  "color": "#64F",
+  "scripts": [
+    "script"
+  ]
+}
