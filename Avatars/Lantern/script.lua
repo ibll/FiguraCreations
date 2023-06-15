@@ -8,6 +8,7 @@ function events.entity_init()
     StillTimer = 0
     Snap = false
     Popped = false
+    OldPosBlock = vec(0, 0, 0)
 
     -- config loading
     SnapFloor = false
@@ -33,7 +34,14 @@ end
 
 function events.tick()
     local vel = player:getVelocity()
-    if vec(vel.x, 0, vel.z):length() < 0.1 then
+    local pos = player:getPos()
+    if SnapFloor then
+        NewPosBlock = pos:floor()
+    else
+        NewPosBlock = vec(math.floor(pos.x), math.round(pos.y), math.floor(pos.z))
+    end
+
+    if OldPosBlock == NewPosBlock then
         StillTimer = StillTimer + 1
     else
         StillTimer = 0
@@ -41,20 +49,13 @@ function events.tick()
 
     Snap = StillTimer >= 20
 
-    function SyncTick()
-        Tick = Tick + 1
-        if Tick < 200 then return end
-        if not host:isHost() then return end
-        Sync()
-        Tick = 0
-    end
-    SyncTick()
-end
-
-function events.render()
     function Snapping()
         if Snap then
-            local pos = player:getPos()
+            if NewPosBlock ~= OldPosBlock and StillTimer >= 5 then
+                StillTimer = 0
+                return
+            end
+
             models.model:setParentType("WORLD")
             if SnapFloor then
                 BlockPos = vec(math.floor(pos.x)*16 + 8, math.floor(pos.y)*16, math.floor(pos.z)*16 + 8)
@@ -74,6 +75,17 @@ function events.render()
         end
     end
     Snapping()
+
+    OldPosBlock = NewPosBlock
+
+    function SyncTick()
+        Tick = Tick + 1
+        if Tick < 200 then return end
+        if not host:isHost() then return end
+        Sync()
+        Tick = 0
+    end
+    SyncTick()
 end
 
 -- helpers
