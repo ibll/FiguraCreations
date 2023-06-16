@@ -19,11 +19,6 @@ function events.entity_init()
 	ActionWheelPg1 = action_wheel:newPage("Functions")
 	action_wheel:setPage(ActionWheelPg1)
 
-    SnapModeAction = ActionWheelPg1:newAction()
-        :item("minecraft:ender_pearl")
-        :title("Snap Mode: Rounded")
-        :onLeftClick(CycleSnapMode)
-
     SeekerToggleAction = ActionWheelPg1:newAction()
 		:item("minecraft:grass_block")
 		:title("Current Mode: Prop")
@@ -33,6 +28,12 @@ function events.entity_init()
 		:toggleTitle("Current Mode: Seeker")
 		:toggleColor(ENABLED_COLOR)
     SeekerToggleAction:setToggled(SeekerEnabled)
+
+    SnapModeAction = ActionWheelPg1:newAction()
+        :item("minecraft:ender_pearl")
+        :title("Snap Mode: Rounded")
+        :onLeftClick(CycleSnapMode)
+
 end
 
 function events.tick()
