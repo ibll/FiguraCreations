@@ -34,6 +34,16 @@ function events.entity_init()
         :title("Snap Mode: Rounded")
         :onLeftClick(CycleSnapMode)
 
+        BuildModeToggleAction = ActionWheelPg1:newAction()
+		:item("minecraft:diamond_shovel")
+		:title("Building Mode: Disabled")
+		:color(DISABLED_COLOR)
+		:onToggle(ToggleBuildMode)
+        :toggleItem("minecraft:lantern")
+		:toggleTitle("Building Mode: Enabled")
+		:toggleColor(ENABLED_COLOR)
+    BuildModeToggleAction:setToggled(BuildModeEnabled)
+
 end
 
 function events.tick()
@@ -44,6 +54,25 @@ function events.tick()
         ModelPos()
     end
     SyncTimer()
+end
+
+function events.MOUSE_PRESS(button, state, modifiers)
+    if BuildModeEnabled and state == 1 then
+        TargetedBlock, HitPos, Side = player:getTargetedBlock(true, 6)
+
+        Pos = TargetedBlock:getPos()*16
+        Pos = vec(Pos.x+8, Pos.y + 0.01, Pos.z+8)
+
+            if Side == "up" then IntendedBlock = vec(Pos.x, Pos.y + 16, Pos.z)
+        elseif Side == "down" then IntendedBlock = vec(Pos.x, Pos.y - 16, Pos.z)
+        elseif Side == "north" then IntendedBlock = vec(Pos.x, Pos.y, Pos.z - 16)
+        elseif Side == "south" then IntendedBlock = vec(Pos.x, Pos.y, Pos.z + 16)
+        elseif Side == "east" then IntendedBlock = vec(Pos.x + 16, Pos.y, Pos.z)
+        elseif Side == "west" then IntendedBlock = vec(Pos.x - 16, Pos.y, Pos.z)
+        end
+
+        pings.place(IntendedBlock)
+    end
 end
 
 -- helpers
@@ -75,9 +104,9 @@ function ModelPos()
     if TicksInSameBlock >= 20 and SnapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
         if SnapMode == "Floored" then
-            BlockPos = vec(math.floor(pos.x)*16 + 8, math.floor(pos.y)*16, math.floor(pos.z)*16 + 8)
+            BlockPos = vec(math.floor(pos.x)*16 + 8, math.floor(pos.y)*16 + 0.01, math.floor(pos.z)*16 + 8)
         elseif SnapMode == "Rounded" then
-            BlockPos = vec(math.floor(pos.x)*16 + 8, math.round(pos.y)*16, math.floor(pos.z)*16 + 8)
+            BlockPos = vec(math.floor(pos.x)*16 + 8, math.round(pos.y)*16 + 0.01, math.floor(pos.z)*16 + 8)
         end
         models.model:setPos(BlockPos)
 
@@ -119,6 +148,11 @@ function ToggleSeeker(state)
 	Sync()
 end
 
+function ToggleBuildMode(state)
+    PrintState("Build Mode", state)
+    BuildModeEnabled = state
+end
+
 function PrintState(string, state)
     function State(value)
         if value == true or value == false then
@@ -147,4 +181,11 @@ end
 function pings.sync(SnapState, SeekerState)
     SnapMode = SnapState
     SeekerEnabled = SeekerState
+end
+
+function pings.place(Pos)
+    Copy = models.model.root:copy("Block")
+    models.model.World:addChild(Copy)
+    Copy:setVisible(true)
+    Copy:setPos(Pos)
 end
