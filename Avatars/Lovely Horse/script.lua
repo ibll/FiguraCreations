@@ -50,12 +50,27 @@ function events.ENTITY_INIT()
 end
 
 function events.TICK()
+	if player:isSneaking() then
+		if Risen then
+			models.horsey.LowerHalf:setPos(0, 0, 6)
+		else
+			models.horsey.LowerHalf:setPos(0, 0, 4)
+		end
+	else
+		models.horsey.LowerHalf:setPos(0, 0, 0)
+	end
 	-- tick functions
 	-- Blink()
 	Emotes()
 end
 
 function events.RENDER(delta)
+	if RISE_ANIMATION:getPlayState() == "PLAYING" then
+		Height = math.lerp(0, 1, RISE_ANIMATION:getTime()/RISE_ANIMATION:getLength())
+	else
+		Height = 1 - math.lerp(0, 1, FALL_ANIMATION:getTime()/FALL_ANIMATION:getLength())
+	end
+	renderer:setOffsetCameraPivot(0, Height, 0)
 	-- eyes render
 	-- eyesAnim(delta)
 end
