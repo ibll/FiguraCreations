@@ -68,7 +68,7 @@ function events.render(delta, context)
     if context == "RENDER" then Eyes.render(delta) end
 
     function BustClipping()
-		local BUST = models.player_model.Body.Bust
+		local BUST = models.Lovely.root.Body.Bust
         if not BustEnabled then return BUST:setVisible(false) end
 		if player:getItem(5).id == "minecraft:air" then return BUST:setVisible(true) end
 		if player:getItem(5).id == "minecraft:elytra" then return BUST:setVisible(true) end
@@ -79,8 +79,8 @@ function events.render(delta, context)
 
     function BootClipping()
         function ModelVisibility(bool)
-            models.player_model.LeftLeg.Lower4.Heart6:setVisible(bool)
-            models.player_model.RightLeg.Lower3.Heart5:setVisible(bool)
+            models.Lovely.root.legs.LeftLeg.Lower4.Heart6:setVisible(bool)
+            models.Lovely.root.legs.RightLeg.Lower3.Heart5:setVisible(bool)
         end
 
         if player:getItem(3).id == "minecraft:air" then return ModelVisibility(true) end
@@ -91,10 +91,10 @@ function events.render(delta, context)
 
     function LeggingClipping()
         function ModelVisibility(bool)
-            models.player_model.LeftLeg.Skirt2:setVisible(bool)
-            models.player_model.RightLeg.Skirt1:setVisible(bool)
-            models.player_model.LeftLeg.Lower4.Heart4:setVisible(bool)
-            models.player_model.RightLeg.Lower3.Heart3:setVisible(bool)
+            models.Lovely.root.legs.LeftLeg.Skirt2:setVisible(bool)
+            models.Lovely.root.legs.RightLeg.Skirt1:setVisible(bool)
+            models.Lovely.root.legs.LeftLeg.Lower4.Heart4:setVisible(bool)
+            models.Lovely.root.legs.RightLeg.Lower3.Heart3:setVisible(bool)
         end
 
         if player:getItem(4).id == "minecraft:air" then return ModelVisibility(true) end
@@ -105,7 +105,7 @@ function events.render(delta, context)
 
     function HelmetClipping()
         function ModelVisibility(bool)
-            models.player_model.Noggin.Hat:setVisible(bool)
+            models.Lovely.Noggin.Hat:setVisible(bool)
             if bool then
                 nameplate.ENTITY:pos(0, 0.25, 0)
             else
@@ -119,13 +119,18 @@ function events.render(delta, context)
     end
     HelmetClipping()
 
-    function HeadRot()
-        VanillaHeadRot = vanilla_model.HEAD:getRot()
-        local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
-        models.player_model.Noggin:setRot(headBodyOffset, VanillaHeadRot.y, VanillaHeadRot.z)
-        models.player_model.Noggin:setPos(vanilla_model.HEAD:getPos())
+    function CustomRot()
+        VanillaHeadRot = vanilla_model.HEAD:getOriginRot()
+        HeadBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+        models.Lovely.Noggin:setRot(VanillaHeadRot.x*1/2, -HeadBodyOffset*1/2, 0)
+        models.Lovely.Noggin:setPos(- vanilla_model.HEAD:getOriginPos())
+
+        models.Lovely.root:setRot(0, -HeadBodyOffset/2, 0)
+        models.Lovely.root.Body:setRot(0, HeadBodyOffset*1/3, 0)
+        models.Lovely.root.arms:setRot(0, HeadBodyOffset*3/8, 0)
+        models.Lovely.root.legs:setRot(0, HeadBodyOffset/2, 0)
     end
-    HeadRot()
+    CustomRot()
 end
 
 ---------------
