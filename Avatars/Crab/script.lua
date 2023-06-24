@@ -2,10 +2,10 @@
 -- Figura Functions --
 ----------------------
 
-WALK_ANIMATION = animations.model.walkin
-FALL_ANIMATION = animations.model.fall
-HIDE_ANIMATION = animations.model.hide
-UNHIDE_ANIMATION = animations.model.unhide
+WALK_ANIMATION = animations.Crab.walkin
+FALL_ANIMATION = animations.Crab.fall
+HIDE_ANIMATION = animations.Crab.hide
+UNHIDE_ANIMATION = animations.Crab.unhide
 
 ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
 DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
@@ -69,9 +69,9 @@ end
 
 function events.render(delta, context)
 	if context == "FIRST_PERSON" then
-		models.model.RIGHT_ARM:setVisible(false)
+		models.Crab.RIGHT_ARM:setVisible(false)
 	else
-		models.model.RIGHT_ARM:setVisible(true)
+		models.Crab.RIGHT_ARM:setVisible(true)
 	end
 
 	local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
@@ -79,13 +79,13 @@ function events.render(delta, context)
 	HeadRot = vec(player:getRot().x, headBodyOffset)
 
 	if HeadRot.x < 0 then
-		models.model.HEAD.BASE.EYES:setRot(-HeadRot.x/3, -HeadRot.y * 0.75, 0)
+		models.Crab.HEAD.BASE.EYES:setRot(-HeadRot.x/3, -HeadRot.y * 0.75, 0)
 	else
-		models.model.HEAD.BASE.EYES:setRot(HeadRot.x/2, -HeadRot.y * 0.75, 0)
+		models.Crab.HEAD.BASE.EYES:setRot(HeadRot.x/2, -HeadRot.y * 0.75, 0)
 	end
 
 	if HeadRot.x < 0 then
-		models.model.HEAD.BASE:setRot(HeadRot.x, 0, 0)
+		models.Crab.HEAD.BASE:setRot(HeadRot.x, 0, 0)
 	end
 
 	if HideEnabled then
@@ -117,12 +117,12 @@ function events.render(delta, context)
 end
 
 function SetBodyVisibility(state)
-	models.model.MIMIC_TORSO.INNER:setVisible(state)
-	models.model.HEAD:setVisible(state)
-	models.model.RIGHT_ARM:setVisible(state)
-	models.model.LEFT_ARM:setVisible(state)
-	models.model.LEFT_CRAWLERS:setVisible(state)
-	models.model.RIGHT_CRAWLERS:setVisible(state)
+	models.Crab.MIMIC_TORSO.INNER:setVisible(state)
+	models.Crab.HEAD:setVisible(state)
+	models.Crab.RIGHT_ARM:setVisible(state)
+	models.Crab.LEFT_ARM:setVisible(state)
+	models.Crab.LEFT_CRAWLERS:setVisible(state)
+	models.Crab.RIGHT_CRAWLERS:setVisible(state)
 end
 
 function ToggleHide(state)

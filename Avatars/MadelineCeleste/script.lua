@@ -18,8 +18,8 @@ function events.entity_init()
 	-- jumping vars
 	IsJumping = false
 	-- anim constants
-	SHRINK_ANIM = animations.player_model.shrink
-	FEATHER_SHRINK_ANIM = animations.feather_model.shrink
+	SHRINK_ANIM = animations.Madeline.shrink
+	FEATHER_SHRINK_ANIM = animations.Feather.shrink
 
 	vanilla_model.INNER_LAYER:setVisible(false)
 	vanilla_model.OUTER_LAYER:setVisible(false)
@@ -53,15 +53,15 @@ function events.entity_init()
 		:toggleColor(ENABLED_COLOR)
 	ParticleToggleAction:setToggled(ParticlesEnabled)
 
-	Swing.head(models.player_model.Head.ExtendedHair, 180, {-120, 65, -30, 30, -30, 30})
-	Swing.head(models.player_model.Head.ExtendedHair.Hair1, 180, {-120, 65, -30, 30, -30, 30}, models.player_model.Head.ExtendedHair, 1)
-	Swing.head(models.player_model.Head.ExtendedHair.Hair1.Hair2, 180, {-120, 65, -30, 30, -30, 30}, models.player_model.Head.ExtendedHair, 2)
+	Swing.head(models.Madeline.Head.ExtendedHair, 180, {-120, 65, -30, 30, -30, 30})
+	Swing.head(models.Madeline.Head.ExtendedHair.Hair1, 180, {-120, 65, -30, 30, -30, 30}, models.Madeline.Head.ExtendedHair, 1)
+	Swing.head(models.Madeline.Head.ExtendedHair.Hair1.Hair2, 180, {-120, 65, -30, 30, -30, 30}, models.Madeline.Head.ExtendedHair, 2)
 
-	Swing.head(models.feather_model.GoldenFeather.Feather1, 180)
-	Swing.head(models.feather_model.GoldenFeather.Feather1.Feather2, 180, nil, models.feather_model.GoldenFeather.Feather1, 1)
-	Swing.head(models.feather_model.GoldenFeather.Feather1.Feather2.Feather3, 180, nil, models.feather_model.GoldenFeather.Feather1, 2)
+	Swing.head(models.Feather.GoldenFeather.Feather1, 180)
+	Swing.head(models.Feather.GoldenFeather.Feather1.Feather2, 180, nil, models.Feather.GoldenFeather.Feather1, 1)
+	Swing.head(models.Feather.GoldenFeather.Feather1.Feather2.Feather3, 180, nil, models.Feather.GoldenFeather.Feather1, 2)
 
-	models.feather_model.GoldenFeather:setLight(vectors.vec2(15, 15))
+	models.Feather.GoldenFeather:setLight(vectors.vec2(15, 15))
 end
 
 function events.tick()
@@ -97,7 +97,7 @@ end
 
 function VanillaParts()
 	-- show or hide armor
-	if ArmorEnabled and animations.player_model.shrink:getPlayState() == "STOPPED" then
+	if ArmorEnabled and animations.Madeline.shrink:getPlayState() == "STOPPED" then
 		vanilla_model.ARMOR:setVisible(true)
 	else
 		vanilla_model.ARMOR:setVisible(false)
@@ -108,7 +108,7 @@ function CustomParts()
 	-- show or hide model parts depending if animating, armor enabled, or if item equipped
 
 	function ShowHairSwoosh()
-		local HAIR_SWOOSH = models.player_model.Head.TopHair.Swoosh
+		local HAIR_SWOOSH = models.Madeline.Head.TopHair.Swoosh
 		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then return HAIR_SWOOSH:setVisible(false) end
 		if player:getItem(6).id == "minecraft:air" then return HAIR_SWOOSH:setVisible(true) end
 		if not vanilla_model.HELMET:getVisible() then return HAIR_SWOOSH:setVisible(true) end
@@ -117,7 +117,7 @@ function CustomParts()
 	ShowHairSwoosh()
 
 	function ShowBust()
-		local BUST = models.player_model.Body.Bust
+		local BUST = models.Madeline.Body.Bust
 		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then return BUST:setVisible(false) end
 		if player:getItem(5).id == "minecraft:air" then return BUST:setVisible(true) end
 		if player:getItem(5).id == "minecraft:elytra" then return BUST:setVisible(true) end
@@ -128,11 +128,11 @@ function CustomParts()
 
 	-- Hair Colour
 	if IsJumping then
-		models.player_model.Head.ExtendedHair:setUV(16/128, 0)
-		models.player_model.Head.TopHair:setUV(0, 16/64)
+		models.Madeline.Head.ExtendedHair:setUV(16/128, 0)
+		models.Madeline.Head.TopHair:setUV(0, 16/64)
 	else
-		models.player_model.Head.ExtendedHair:setUV(0, 0)
-		models.player_model.Head.TopHair:setUV(0, 0)
+		models.Madeline.Head.ExtendedHair:setUV(0, 0)
+		models.Madeline.Head.TopHair:setUV(0, 0)
 	end
 
 	-- Golden Feather
@@ -151,41 +151,41 @@ function CustomParts()
 		if (player:getRot().x > 45) then
 			FeatherTimer = FeatherTimer + 1
 			if FeatherTimer % 2 ~= 0 then
-				if models.feather_model.GoldenFeather:getColor()[1] ~= 1 then
-					models.feather_model.GoldenFeather:setColor(1, 1, 1)
+				if models.Feather.GoldenFeather:getColor()[1] ~= 1 then
+					models.Feather.GoldenFeather:setColor(1, 1, 1)
 				else
-					models.feather_model.GoldenFeather:setColor(2, 0.5, 0.5)
+					models.Feather.GoldenFeather:setColor(2, 0.5, 0.5)
 				end
 			end
 		else
-			models.feather_model.GoldenFeather:setColor(1, 1, 1)
+			models.Feather.GoldenFeather:setColor(1, 1, 1)
 			FeatherTimer = 0
 		end
 
 		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then
-			models.player_model:setVisible(false)
+			models.Madeline:setVisible(false)
 		end
 
 	else
 
 		if math.abs(SHRINK_ANIM:getTime()) >= SHRINK_ANIM:getLength() then
-		--if animations.player_model.shrink:getPlayState() == "ENDED" then
+		--if animations.Madeline.shrink:getPlayState() == "ENDED" then
 			SHRINK_ANIM:stop()
 		
 
 			FEATHER_SHRINK_ANIM:stop()
 		
 		end
-		if not models.player_model.Head:getVisible() then
-			models.player_model:setVisible(true)
+		if not models.Madeline.Head:getVisible() then
+			models.Madeline:setVisible(true)
 		end
 
 	end
 
-	if animations.player_model.shrink:getPlayState() == "STOPPED" then
-		models.feather_model.GoldenFeather:setVisible(false)
+	if animations.Madeline.shrink:getPlayState() == "STOPPED" then
+		models.Feather.GoldenFeather:setVisible(false)
 	else
-		models.feather_model.GoldenFeather:setVisible(true)
+		models.Feather.GoldenFeather:setVisible(true)
 	end
 end
 
@@ -202,15 +202,15 @@ function Particles()
 			FootParticleColor = {202/255, 53/255, 37/255}
 		end
 
-		SpawnParticle(models.player_model.RightArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
-		SpawnParticle(models.player_model.LeftArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
-		SpawnParticle(models.player_model.RightLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
-		SpawnParticle(models.player_model.LeftLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
+		SpawnParticle(models.Madeline.RightArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
+		SpawnParticle(models.Madeline.LeftArm:partToWorldMatrix():apply(0, -10, 0), HandParticleColor)
+		SpawnParticle(models.Madeline.RightLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
+		SpawnParticle(models.Madeline.LeftLeg:partToWorldMatrix():apply(0, -10, 0), FootParticleColor)
 	else
-		if models.feather_model.GoldenFeather:getColor()[1] ~= 1 then
-			SpawnParticle(models.feather_model.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 96/255, 95/255})
+		if models.Feather.GoldenFeather:getColor()[1] ~= 1 then
+			SpawnParticle(models.Feather.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 96/255, 95/255})
 		else
-			SpawnParticle(models.feather_model.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 255/255, 95/255})
+			SpawnParticle(models.Feather.GoldenFeather:partToWorldMatrix():apply(0, 0, 0), {255/255, 255/255, 95/255})
 		end
 	end
 
