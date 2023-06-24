@@ -1,7 +1,7 @@
 --  Modified from Fran#3814's eye template
 
 -- MODIFY THESE!!!
-local eyes = models.steampunk.Head.Eyes
+local eyes = models.Steampunk.Head.Eyes
 TEXTURE_HEIGHT  = 128    -- texture size (height), in pixels
 
 -- blink constants

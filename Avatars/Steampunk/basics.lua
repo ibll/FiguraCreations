@@ -61,7 +61,7 @@ end
 function BasicsAPI.render()
     function BustClipping()
         function ModelVisibility(bool)
-            models.steampunk.Body.Bust:setVisible(bool)
+            models.Steampunk.Body.Bust:setVisible(bool)
         end
 
         if not BustEnabled then return ModelVisibility(false) end
@@ -74,8 +74,8 @@ function BasicsAPI.render()
 
     function BootClipping()
         function ModelVisibility(bool)
-            models.steampunk.LeftLeg.LeftShoe:setVisible(bool)
-            models.steampunk.RightLeg.RightShoe:setVisible(bool)
+            models.Steampunk.LeftLeg.LeftShoe:setVisible(bool)
+            models.Steampunk.RightLeg.RightShoe:setVisible(bool)
         end
     
         if player:getItem(3).id == "minecraft:air" then return ModelVisibility(true) end
