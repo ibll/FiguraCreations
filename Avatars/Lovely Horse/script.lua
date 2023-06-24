@@ -11,16 +11,13 @@ function events.ENTITY_INIT()
 	vanilla_model.ARMOR:setVisible(false)
 	vanilla_model.ELYTRA:setVisible(false)
 
-	-- emotes
-	RISE_ANIMATION = animations.horsey.rise
-	FALL_ANIMATION = animations.horsey.fall
+	-- anims
+	RISE_ANIMATION = animations.Horsey.rise
+	FALL_ANIMATION = animations.Horsey.fall
 
 	-- defaults
 	LastEmote = "dab"
 	Risen = false
-
-	-- tools
-	Animations = animations:getAnimations()
 
 	-- wheel, keybinds, and animations
 	RepeatEmoteKey = keybinds:newKeybind("Repeat Last Emote", "key.keyboard.m")
@@ -52,12 +49,12 @@ end
 function events.TICK()
 	if player:isSneaking() then
 		if Risen then
-			models.horsey.LowerHalf:setPos(0, 0, 6)
+			models.Horsey.LowerHalf:setPos(0, 0, 6)
 		else
-			models.horsey.LowerHalf:setPos(0, 0, 4)
+			models.Horsey.LowerHalf:setPos(0, 0, 4)
 		end
 	else
-		models.horsey.LowerHalf:setPos(0, 0, 0)
+		models.Horsey.LowerHalf:setPos(0, 0, 0)
 	end
 	-- tick functions
 	-- Blink()
@@ -68,8 +65,11 @@ function events.RENDER(delta)
 	if RISE_ANIMATION:getPlayState() == "PLAYING" then
 		Height = math.lerp(0, 1, RISE_ANIMATION:getTime()/RISE_ANIMATION:getLength())
 	else
+		FallTime = FALL_ANIMATION:getTime()
+		if FallTime == 0 then Height = 0 return end
 		Height = 1 - math.lerp(0, 1, FALL_ANIMATION:getTime()/FALL_ANIMATION:getLength())
 	end
+---@diagnostic disable-next-line: undefined-field
 	renderer:setOffsetCameraPivot(0, Height, 0)
 	-- eyes render
 	-- eyesAnim(delta)
@@ -119,7 +119,7 @@ function Emotes()
 	end
 
 	if player:isSprinting() then
-		animations.horsey[LastEmote]:stop()
+		animations.Horsey[LastEmote]:stop()
 	end
 
 	if RISE_ANIMATION:getPlayState() == "STOPPED"  and FALL_ANIMATION:getTime() >= FALL_ANIMATION:getLength() then
@@ -134,11 +134,11 @@ function RepeatLast()
 end
 
 function pings.emote(name)
-	if LastEmote == name and animations.horsey[name]:getPlayState() == "PLAYING" and animations.horsey[name]:getTime() < animations.horsey[name]:getLength()then
+	if LastEmote == name and animations.Horsey[name]:getPlayState() == "PLAYING" and animations.Horsey[name]:getTime() < animations.Horsey[name]:getLength()then
 		goto cancelemote
 	end
-	animations.horsey[LastEmote]:stop()
-	animations.horsey[name]:play()
+	animations.Horsey[LastEmote]:stop()
+	animations.Horsey[name]:play()
 	LastEmote = name
 	::cancelemote::
 end
