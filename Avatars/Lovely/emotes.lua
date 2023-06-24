@@ -1,8 +1,7 @@
--- v1.0
+-- v1.1
 EmotesAPI = {}
 
 local savedEmoteList
-local savedReturnPage
 local lastEmote
 
 local function repeatLast()
@@ -11,7 +10,6 @@ end
 
 function EmotesAPI.init(emoteList, setPage, returnPage)
     savedEmoteList = emoteList
-    savedReturnPage = returnPage
 
     local defaultEmote = savedEmoteList[1]
     lastEmote = {
@@ -30,10 +28,17 @@ function EmotesAPI.init(emoteList, setPage, returnPage)
             :item(value.item)
             :onLeftClick(function()
                 pings.emote(value.model, value.anim)
-                if savedReturnPage then
-                    action_wheel:setPage(savedReturnPage)
+                if returnPage then
+                    action_wheel:setPage(returnPage)
                 end
             end )
+    end
+
+    if returnPage then
+        emoteWheel:newAction()
+            :title("Back")
+            :item('minecraft:barrier')
+            :onLeftClick(function() action_wheel:setPage(returnPage) end)
     end
 
     if setPage then action_wheel:setPage(emoteWheel) end
