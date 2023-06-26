@@ -22,9 +22,9 @@ function events.entity_init()
 end
 
 function events.tick()
-    basics.tick()
-    eyes.tick()
+    basics.lazySync()
     basics.conditionalModelParts()
+    eyes.tick()
 end
 
 function events.render(delta, context)

@@ -107,7 +107,7 @@ function basicsAPI.init(conditionalModelParts, defaultPage, returnPage)
     return functionsPage
 end
 
-function basicsAPI.tick()
+function basicsAPI.lazySync()
     tick = tick + 1
     if tick < 200 then return end
     if not host:isHost() then return end
