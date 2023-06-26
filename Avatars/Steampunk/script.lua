@@ -1,8 +1,8 @@
-local basics = require("basics")
+local ibllVA = require("IbllVA")
 local eyes = require("eyes")
 
 local conditionalModelParts = {
-    torso = {
+    body = {
         notOnBack = {
             models.Steampunk.Body.Bust
         },
@@ -10,7 +10,7 @@ local conditionalModelParts = {
             models.Steampunk.Body.Backpack
         }
     },
-    boots = {
+    feet = {
         models.Steampunk.RightLeg.RightShoe,
         models.Steampunk.LeftLeg.LeftShoe
     }
@@ -18,12 +18,12 @@ local conditionalModelParts = {
 
 function events.entity_init()
     vanilla_model.PLAYER:setVisible(false)
-    basics.init(conditionalModelParts, true)
+    ibllVA.init(conditionalModelParts, true)
 end
 
 function events.tick()
-    basics.lazySync()
-    basics.conditionalModelParts()
+    ibllVA.lazySync()
+    ibllVA.conditionalModelParts()
     eyes.tick()
 end
 

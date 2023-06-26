@@ -1,4 +1,34 @@
--- v1.0
+-- Ibll Vanilla Accessories v1.0
+-- For wrangling vanilla armour/elytra/capes
+
+--- Format:
+---
+--- {
+---
+---     head = {
+---         netheriteOnly = {}
+---     },
+---     body = {
+---         notOnBack = {},
+---         onBackOnly = {}
+---     },
+---     legs = {},
+---     feet = {}
+--- }
+---
+--- Place model parts in all but the parent table!
+---
+--- For example, ear parts placed in the `head` table
+--- will automatically hide when any helmet is equiped!
+---
+--- Another: parts on the chest/stomach placed in
+--- `body.notOnBack` will disappear when a chestplate
+--- is equipped, but not with elytra!
+---@alias IbllVA.PartLocationTable table
+
+----------
+-- VARS --
+----------
 
 local ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
 local DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
@@ -63,9 +93,13 @@ end
 -- API --
 ---------
 
-local basicsAPI = {}
+local IbllVA_API = {}
 
-function basicsAPI.init(conditionalModelParts, defaultPage, returnPage)
+---@param conditionalModelParts? IbllVA.PartLocationTable
+---@param defaultPage? boolean
+---@param returnPage? Page
+---@return Page
+function IbllVA_API.init(conditionalModelParts, defaultPage, returnPage)
     savedConditionalModelParts = conditionalModelParts
 
     -- config loading
@@ -107,7 +141,7 @@ function basicsAPI.init(conditionalModelParts, defaultPage, returnPage)
     return functionsPage
 end
 
-function basicsAPI.lazySync()
+function IbllVA_API.lazySync()
     tick = tick + 1
     if tick < 200 then return end
     if not host:isHost() then return end
@@ -116,38 +150,56 @@ function basicsAPI.lazySync()
     tick = 0
 end
 
-function basicsAPI.conditionalModelParts()
+function IbllVA_API.conditionalModelParts()
     if savedConditionalModelParts == nil then return end
 
     local function helmetClipping()
-        if savedConditionalModelParts.helmet == nil then return end
+        if savedConditionalModelParts.head == nil then return end
+
         local function modelVisibility(bool)
-            for index, value in ipairs(savedConditionalModelParts.helmet) do
+            for index, value in ipairs(savedConditionalModelParts.head) do
+                value:setVisible(bool)
+            end
+        end
+
+        local function netheriteBlockedModelVisibility(bool)
+            if savedConditionalModelParts.head.netheriteOnly == nil then return end
+            for index, value in ipairs(savedConditionalModelParts.head.netheriteOnly) do
                 value:setVisible(bool)
             end
         end
 
         local slotId = player:getItem(6).id
-        if vanilla_model.HELMET:getVisible() == false or slotId == "minecraft:air" then return modelVisibility(true) end
-        modelVisibility(false)
+
+        if vanilla_model.HELMET:getVisible() == false or slotId == "minecraft:air" then
+            modelVisibility(true)
+            netheriteBlockedModelVisibility(true)
+        else
+            modelVisibility(false)
+            netheriteBlockedModelVisibility(slotId ~= "minecraft:netherite_helmet")
+        end
     end
     helmetClipping()
 
     local function bodyClipping()
+        if savedConditionalModelParts.body == nil then return end
+
         local function frontSidesModelVisibiilty(bool)
-            for index, value in ipairs(savedConditionalModelParts.torso.notOnBack) do
+            if savedConditionalModelParts.body.notOnBack == nil then return end
+            for index, value in ipairs(savedConditionalModelParts.body.notOnBack) do
                 value:setVisible(bool)
             end
         end
 
         local function backpackModelVisibility(bool)
-            for index, value in ipairs(savedConditionalModelParts.torso.onBackOnly) do
+            if savedConditionalModelParts.body.onBackOnly == nil then return end
+            for index, value in ipairs(savedConditionalModelParts.body.onBackOnly) do
                 value:setVisible(bool)
             end
         end
 
         local function wraparoundModelVisibility(bool)
-            for index, value in ipairs(savedConditionalModelParts.torso) do
+            for index, value in ipairs(savedConditionalModelParts.body) do
                 value:setVisible(bool)
             end
         end
@@ -174,9 +226,9 @@ function basicsAPI.conditionalModelParts()
     bodyClipping()
 
     local function leggingClipping()
-        if savedConditionalModelParts.leggings == nil then return end
+        if savedConditionalModelParts.legs == nil then return end
         local function modelVisibility(bool)
-            for index, value in ipairs(savedConditionalModelParts.leggings) do
+            for index, value in ipairs(savedConditionalModelParts.legs) do
                 value:setVisible(bool)
             end
         end
@@ -188,9 +240,9 @@ function basicsAPI.conditionalModelParts()
     leggingClipping()
 
     local function bootClipping()
-        if savedConditionalModelParts.boots == nil then return end
+        if savedConditionalModelParts.feet == nil then return end
         local function modelVisibility(bool)
-            for index, value in ipairs(savedConditionalModelParts.boots) do
+            for index, value in ipairs(savedConditionalModelParts.feet) do
                 value:setVisible(bool)
             end
             models.Steampunk.LeftLeg.LeftShoe:setVisible(bool)
@@ -206,4 +258,4 @@ function basicsAPI.conditionalModelParts()
     -- Add other functions below!
 end
 
-return basicsAPI
+return IbllVA_API
