@@ -22,8 +22,7 @@ function events.entity_init()
 end
 
 function events.tick()
-    ibllVA.lazySync()
-    ibllVA.conditionalModelParts()
+    ibllVA.tick()
     eyes.tick()
 end
 
