@@ -1,18 +1,32 @@
+local basics = require("basics")
+local eyes = require("eyes")
 
-Basics = require("basics")
-Eyes = require("eyes")
+local conditionalModelParts = {
+    torso = {
+        notOnBack = {
+            models.Steampunk.Body.Bust
+        },
+        onBackOnly = {
+            models.Steampunk.Body.Backpack
+        }
+    },
+    boots = {
+        models.Steampunk.RightLeg.RightShoe,
+        models.Steampunk.LeftLeg.LeftShoe
+    }
+}
 
 function events.entity_init()
     vanilla_model.PLAYER:setVisible(false)
-    Basics.entity_init()
+    basics.init(conditionalModelParts, true)
 end
 
 function events.tick()
-    Basics.tick()
-    Eyes.tick()
+    basics.tick()
+    eyes.tick()
+    basics.conditionalModelParts()
 end
 
 function events.render(delta, context)
-    Basics.render()
-    Eyes.render(delta)
+    eyes.render(delta)
 end
