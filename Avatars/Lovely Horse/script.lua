@@ -35,7 +35,7 @@ function events.ENTITY_INIT()
 	rise.addActionTo(mainPage)
 
 	local emoteWheel = emotes.init(emotesList, false, mainPage)
-	EmoteAction = mainPage:newAction()
+	mainPage:newAction()
 		:title("Emotes")
 		:item("minecraft:painting")
 		:onLeftClick(function() action_wheel:setPage(emoteWheel) end)

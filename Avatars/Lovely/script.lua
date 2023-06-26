@@ -37,7 +37,7 @@ end
 function events.render(delta, context)
     if context == "RENDER" then eyes.render(delta) end
 
-    function CustomRot()
+    local function customRot()
         VanillaHeadRot = vanilla_model.HEAD:getOriginRot()
         HeadBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
         models.Lovely.Noggin:setRot(VanillaHeadRot.x*1/2, -HeadBodyOffset*1/2, 0)
@@ -48,5 +48,5 @@ function events.render(delta, context)
         models.Lovely.Base.Arms:setRot(0, HeadBodyOffset*3/8, 0)
         models.Lovely.Base.Legs:setRot(0, HeadBodyOffset/2, 0)
     end
-    CustomRot()
+    customRot()
 end

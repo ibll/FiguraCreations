@@ -1,5 +1,5 @@
 -- v1.1
-EmotesAPI = {}
+local EmotesAPI = {}
 
 local savedEmoteList
 local lastEmote
@@ -35,7 +35,7 @@ function EmotesAPI.init(emoteList, setPage, returnPage)
     end
 
     if returnPage then
-        emoteWheel:newAction(8)
+        emoteWheel:newAction()
             :title("Back")
             :item('minecraft:barrier')
             :onLeftClick(function() action_wheel:setPage(returnPage) end)
