@@ -1,18 +1,31 @@
+local ibllVA = require("IbllVA")
+local eyes = require("eyes")
 
-Basics = require("basics")
-Eyes = require("eyes")
+local conditionalModelParts = {
+    body = {
+        notOnBack = {
+            models.Steampunk.Body.Bust
+        },
+        onBackOnly = {
+            models.Steampunk.Body.Backpack
+        }
+    },
+    feet = {
+        models.Steampunk.RightLeg.RightShoe,
+        models.Steampunk.LeftLeg.LeftShoe
+    }
+}
 
 function events.entity_init()
     vanilla_model.PLAYER:setVisible(false)
-    Basics.entity_init()
+    ibllVA.init(conditionalModelParts, true)
 end
 
 function events.tick()
-    Basics.tick()
-    Eyes.tick()
+    ibllVA.tick()
+    eyes.tick()
 end
 
 function events.render(delta, context)
-    Basics.render()
-    Eyes.render(delta)
+    eyes.render(delta)
 end

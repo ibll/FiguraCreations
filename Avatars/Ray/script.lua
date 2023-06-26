@@ -1,94 +1,97 @@
-function events.entity_init()
-    RootBone = models.Ray.root
-    HeadBone = RootBone.Main
-    HeadBoneAnchor = RootBone.MainAnchor
-    TiltBone = HeadBone.Inner.Moving
+local ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
+local DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
 
-    vanilla_model.PLAYER:setVisible(false)
-    vanilla_model.ARMOR:setVisible(false)
-    vanilla_model.ELYTRA:setVisible(false)
+local rootBone
+local headBone
+local tiltBone
+local headBoneAnchor
 
-    Tick = 0
+local tick
 
-	-- action wheel constants
-	ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
-	DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
-
-    -- action wheel
-	ActionWheelPg1 = action_wheel:newPage("Functions")
-	action_wheel:setPage(ActionWheelPg1)
-end
-
-function events.tick()
-    -- Blink.tick()
-    RayTick()
-end
-
-function events.render(delta, context)
-    -- Blink.render(delta)
-    RayRender(delta, context)
-end
-
-function RayTick()
-end
-
-function RayRender(delta, context)
+local function rayRender(delta, context)
     if context == "FIRST_PERSON" then return end
 
-    TiltRot = (-player:getRot(delta).x - HeadBone:getRot().x)
-    HeadBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
-    EyeRot = -HeadBodyOffset/2
-    PlayerVel = vectors.rotateAroundAxis(player:getBodyYaw(delta),player:getVelocity(),vec(0, 1, 0))*75
+    local tiltRot = (-player:getRot(delta).x - headBone:getRot().x)
+    local headBodyOffset = (player:getRot().y - player:getBodyYaw() + 180) % 360 - 180
+    local eyeRot = -headBodyOffset/2
+    local playerVel = vectors.rotateAroundAxis(player:getBodyYaw(delta),player:getVelocity(),vec(0, 1, 0))*75
 
-    IdleOffset = vectors.vec3(
+    local idleOffset = vectors.vec3(
         math.cos(world.getTime(delta)/20),
         math.sin(world.getTime(delta)/25),
         math.sin(world.getTime(delta)/30)
     )
 
-    function LeftUp()
-        LeftUp = animations.Ray.LeftUp
-        LeftArm = RootBone.LeftArm
+    local function leftUp()
+        local leftUpAnim = animations.Ray.LeftUp
+        local leftArm = rootBone.LeftArm
+
         if player:getItem(2).id == "minecraft:air" then
-            LeftArm.LeftUpperArm:setOffsetRot((IdleOffset*5)+(vec(PlayerVel.z/2, 0, math.abs(PlayerVel.z))))
-            LeftArm.LeftUpperArm.LeftLowerArm:setOffsetRot(IdleOffset*5)
-            LeftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftFingers:setOffsetRot(0, IdleOffset.y*-20, 0)
-            LeftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftThumb:setOffsetRot(0, 0, IdleOffset.z*-20)
+            leftArm.LeftUpperArm:setOffsetRot((idleOffset*5)+(vec(playerVel.z/2, 0, math.abs(playerVel.z))))
+            leftArm.LeftUpperArm.LeftLowerArm:setOffsetRot(idleOffset*5)
+            leftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftFingers:setOffsetRot(0, idleOffset.y*-20, 0)
+            leftArm.LeftUpperArm.LeftLowerArm.LeftHand.LeftThumb:setOffsetRot(0, 0, idleOffset.z*-20)
 
-            if (LeftUp:getPlayState() == "PLAYING") then return end
-            LeftUp:play()
+            if (leftUpAnim:getPlayState() == "PLAYING") then return end
+            leftUpAnim:play()
         else
-            if not LeftUp:getPlayState() == "PLAYING" then return end
-            LeftUp:stop()
+            if not leftUpAnim:getPlayState() == "PLAYING" then return end
+            leftUpAnim:stop()
         end
     end
-    LeftUp()
+    leftUp()
 
-    function RightUp()
-        RightUp = animations.Ray.RightUp
-        RightArm = RootBone.RightArm
+    local function rightUp()
+        local rightUpAnim = animations.Ray.RightUp
+        local rightArm = rootBone.RightArm
         if player:getItem(1).id == "minecraft:air" then
-            RightArm.RightUpperArm:setOffsetRot((IdleOffset*5)+(vec(PlayerVel.z/2, 0, -math.abs(PlayerVel.z))))
-            RightArm.RightUpperArm.RightLowerArm:setOffsetRot(IdleOffset*-5)
-            RightArm.RightUpperArm.RightLowerArm.RightHand.RightFingers:setOffsetRot(0, IdleOffset.y*20, 0)
-            RightArm.RightUpperArm.RightLowerArm.RightHand.RightThumb:setOffsetRot(0, 0, IdleOffset.z*20)
+            rightArm.RightUpperArm:setOffsetRot((idleOffset*5)+(vec(playerVel.z/2, 0, -math.abs(playerVel.z))))
+            rightArm.RightUpperArm.RightLowerArm:setOffsetRot(idleOffset*-5)
+            rightArm.RightUpperArm.RightLowerArm.RightHand.RightFingers:setOffsetRot(0, idleOffset.y*20, 0)
+            rightArm.RightUpperArm.RightLowerArm.RightHand.RightThumb:setOffsetRot(0, 0, idleOffset.z*20)
 
-            if (RightUp:getPlayState() == "PLAYING") then return end
-            RightUp:play()
+            if (rightUpAnim:getPlayState() == "PLAYING") then return end
+            rightUpAnim:play()
         else
-            if not (RightUp:getPlayState() == "PLAYING") then return end
-            RightUp:stop()
+            if not (rightUpAnim:getPlayState() == "PLAYING") then return end
+            rightUpAnim:stop()
         end
     end
-    RightUp()
+    rightUp()
 
     -- When swimming/flying, player model does not face where the camera is looking by default.
-    if player:getBoundingBox().y <= 1 then HeadXRotExtraDegrees = 90 else HeadXRotExtraDegrees = 0 end
-    HeadBone:setRot(math.lerp(HeadBone:getRot(),vec(math.clamp(-PlayerVel.z, -25, 100) + HeadXRotExtraDegrees, 0, PlayerVel.x),delta))
+    local headXRotExtraDegrees
+    if player:getBoundingBox().y <= 1 then headXRotExtraDegrees = 90 else headXRotExtraDegrees = 0 end
+    headBone:setRot(math.lerp(headBone:getRot(),vec(math.clamp(-playerVel.z, -25, 100) + headXRotExtraDegrees, 0, playerVel.x),delta))
 
-    RootBone:setPos(IdleOffset)
-    nameplate.ENTITY:setPos(IdleOffset/32)
+    rootBone:setPos(idleOffset)
+    nameplate.ENTITY:setPos(idleOffset/32)
 
-    TiltBone:setRot(math.lerp(TiltBone:getRot(),vec(math.clamp(TiltRot,-25,25),0,0),delta))
-    TiltBone.Eye:setRot(math.lerp(TiltBone.Eye:getRot(),vec(0,math.clamp(EyeRot,-50,50),0),delta))
+    tiltBone:setRot(math.lerp(tiltBone:getRot(),vec(math.clamp(tiltRot,-25,25),0,0),delta))
+    tiltBone.Eye:setRot(math.lerp(tiltBone.Eye:getRot(),vec(0,math.clamp(eyeRot,-50,50),0),delta))
+end
+
+----------------------
+-- Figura Functions --
+----------------------
+
+function events.entity_init()
+    vanilla_model.PLAYER:setVisible(false)
+    vanilla_model.ARMOR:setVisible(false)
+    vanilla_model.ELYTRA:setVisible(false)
+
+    rootBone = models.Ray.root
+    headBone = rootBone.Main
+    tiltBone = headBone.Inner.Moving
+    headBoneAnchor = rootBone.MainAnchor
+
+    tick = 0
+end
+
+function events.tick()
+    -- Tick Functions
+end
+
+function events.render(delta, context)
+    rayRender(delta, context)
 end

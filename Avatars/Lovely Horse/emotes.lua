@@ -1,5 +1,5 @@
 -- v1.1
-EmotesAPI = {}
+local EmotesAPI = {}
 
 local savedEmoteList
 local lastEmote

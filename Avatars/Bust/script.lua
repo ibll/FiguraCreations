@@ -1,124 +1,85 @@
-models:setPrimaryTexture("SKIN")
+local ibllVA = require("IbllVA")
 
-function events.entity_init()
-    Tick = 0
+local ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
+local DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
 
-	-- action wheel constants
-	ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
-	DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
+local tick = 0
 
-    -- config loading
-    BustEnabled = false
-    if config:load("BustEnabled") == true then BustEnabled = true end
-    ArmorEnabled = false
-    if config:load("ArmorEnabled") == true then ArmorEnabled = true end
-	ElytraEnabled = false
-    if config:load("ElytraEnabled") == true then ElytraEnabled = true end
+local bustEnabled = false
 
-    -- action wheel
-	ActionWheelPg1 = action_wheel:newPage("Functions")
-	action_wheel:setPage(ActionWheelPg1)
+local conditionalModelParts = {
+    body = {
+        notOnBack = { models.Bust.Body }
+    }
+}
 
-	ArmorToggleAction = ActionWheelPg1:newAction()
-		:item("minecraft:netherite_chestplate")
-		:title("Enable Armour")
-		:color(DISABLED_COLOR)
-		:onToggle(ToggleArmor)
-		:toggleTitle("Disable Armour")
-		:toggleColor(ENABLED_COLOR)
-    ArmorToggleAction:setToggled(ArmorEnabled)
+--------------------
+-- Ping Functions --
+--------------------
 
-	ElytraToggleAction = ActionWheelPg1:newAction()
-		:item("minecraft:elytra")
-		:title("Enable Elytra")
-		:color(DISABLED_COLOR)
-		:onToggle(ToggleElytra)
-		:toggleTitle("Disable Elytra")
-		:toggleColor(ENABLED_COLOR)
-    ElytraToggleAction:setToggled(ElytraEnabled)
+function pings.sync(bustState)
+    bustEnabled = bustState
 
-    BustToggleAction = ActionWheelPg1:newAction()
-        :item("minecraft:melon")
-        :title("Enable Bust")
-        :color(DISABLED_COLOR)
-        :onToggle(ToggleBust)
-        :toggleTitle("Disable Bust")
-        :toggleColor(ENABLED_COLOR)
-    BustToggleAction:setToggled(BustEnabled)
-
-    Sync()
+    models.Bust.Body["Bust"]:setVisible(bustEnabled)
+    models.Bust.Body["Bust Layer"]:setVisible(bustEnabled)
 end
 
-function events.tick()
-    function SyncTick()
-        Tick = Tick + 1
-        if Tick < 200 then return end
-        if not host:isHost() then return end
-        Sync()
-        Tick = 0
-    end
-    SyncTick()
+local function quickSync()
+    pings.sync(bustEnabled)
 end
 
-function events.render()
-    function ShowBust()
-		local BUST = models.Bust.Body
-        if not BustEnabled then return BUST:setVisible(false) end
-		if player:getItem(5).id == "minecraft:air" then return BUST:setVisible(true) end
-		if player:getItem(5).id == "minecraft:elytra" then return BUST:setVisible(true) end
-		if not vanilla_model.CHESTPLATE:getVisible() then return BUST:setVisible(true) end
-		BUST:setVisible(false)
-	end
-	ShowBust()
+local function syncTick()
+    tick = tick + 1
+    if tick < 200 then return end
+    if not host:isHost() then return end
+    quickSync()
+    tick = 0
 end
 
----------------
--- Functions --
----------------
+------------------
+-- Action Wheel --
+------------------
 
-function ModifyVisibility()
-    vanilla_model.ARMOR:setVisible(ArmorEnabled)
-    vanilla_model.ELYTRA:setVisible(ElytraEnabled)
-end
-
-function PrintState(string, state)
+local function printState(string, state)
     function State(bool)
         if bool then return "§aEnabled" else return "§cDisabled" end
     end
     print(string .. ": " .. (State(state)))
 end
 
-function Sync()
-    pings.sync(ArmorEnabled, ElytraEnabled, BustEnabled)
+local function toggleBust()
+    bustEnabled = not bustEnabled
+    config:save("BustEnabled", bustEnabled)
+    quickSync()
+    printState("Bust Visibility", bustEnabled)
 end
 
-function ToggleArmor()
-    ArmorEnabled = not ArmorEnabled
-    config:save("ArmorEnabled", ArmorEnabled)
-    Sync()
-    PrintState("Armour Visibility", ArmorEnabled)
-end
-function ToggleElytra()
-    ElytraEnabled = not ElytraEnabled
-    config:save("ElytraEnabled", ElytraEnabled)
-    Sync()
-    PrintState("Elytra Visibility", ElytraEnabled)
-end
-function ToggleBust()
-    BustEnabled = not BustEnabled
-    config:save("BustEnabled", BustEnabled)
-    Sync()
-    PrintState("Bust Visibility", BustEnabled)
+----------------------
+-- Figura Functions --
+----------------------
+
+function events.entity_init()
+    models:setPrimaryTexture("SKIN")
+
+    -- config loading
+    if config:load("BustEnabled") == true then bustEnabled = true end
+
+    -- action wheel
+	local functionWheel = ibllVA.init(conditionalModelParts, true)
+
+    local bustToggleAction = functionWheel:newAction()
+        :item("minecraft:melon")
+        :title("Enable Bust")
+        :color(DISABLED_COLOR)
+        :onToggle(toggleBust)
+        :toggleTitle("Disable Bust")
+        :toggleColor(ENABLED_COLOR)
+    bustToggleAction:setToggled(bustEnabled)
+
+    quickSync()
 end
 
---------------------
--- Ping Functions --
---------------------
-
-function pings.sync(armourState, elytraState, bustState)
-    ArmorEnabled = armourState
-    ElytraEnabled = elytraState
-    BustEnabled = bustState
-
-    ModifyVisibility()
+function events.tick()
+    ibllVA.tick()
+    syncTick()
 end
