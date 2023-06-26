@@ -35,7 +35,7 @@ function EmotesAPI.init(emoteList, setPage, returnPage)
     end
 
     if returnPage then
-        emoteWheel:newAction()
+        emoteWheel:newAction(8)
             :title("Back")
             :item('minecraft:barrier')
             :onLeftClick(function() action_wheel:setPage(returnPage) end)
