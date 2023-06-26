@@ -47,7 +47,7 @@ local tick = 0
 -- PINGS --
 -----------
 
-function pings.sync(armourState, elytraState)
+pings["IbllVA.sync"] = function(armourState, elytraState)
     armorEnabled = armourState
     elytraEnabled = elytraState
     vanilla_model.ARMOR:setVisible(armorEnabled)
@@ -55,7 +55,7 @@ function pings.sync(armourState, elytraState)
 end
 
 local function quickSync()
-    pings.sync(armorEnabled, elytraEnabled)
+    pings["IbllVA.sync"](armorEnabled, elytraEnabled)
 end
 
 ---------------
@@ -141,7 +141,15 @@ function IbllVA_API.init(conditionalModelParts, defaultPage, returnPage)
     return functionsPage
 end
 
-function IbllVA_API.lazySync()
+-- tick
+function IbllVA_API.tick()
+    IbllVA_API.__TickFunctions.lazySync()
+    IbllVA_API.__TickFunctions.conditionalModelParts()
+end
+
+IbllVA_API.__TickFunctions = {}
+
+function IbllVA_API.__TickFunctions.lazySync()
     tick = tick + 1
     if tick < 200 then return end
     if not host:isHost() then return end
@@ -150,9 +158,9 @@ function IbllVA_API.lazySync()
     tick = 0
 end
 
-function IbllVA_API.conditionalModelParts()
+function IbllVA_API.__TickFunctions.conditionalModelParts()
     if savedConditionalModelParts == nil then return end
-
+    
     local function helmetClipping()
         if savedConditionalModelParts.head == nil then return end
 
@@ -183,29 +191,29 @@ function IbllVA_API.conditionalModelParts()
 
     local function bodyClipping()
         if savedConditionalModelParts.body == nil then return end
-
+        
         local function frontSidesModelVisibiilty(bool)
             if savedConditionalModelParts.body.notOnBack == nil then return end
             for index, value in ipairs(savedConditionalModelParts.body.notOnBack) do
                 value:setVisible(bool)
             end
         end
-
+        
         local function backpackModelVisibility(bool)
             if savedConditionalModelParts.body.onBackOnly == nil then return end
             for index, value in ipairs(savedConditionalModelParts.body.onBackOnly) do
                 value:setVisible(bool)
             end
         end
-
+        
         local function wraparoundModelVisibility(bool)
             for index, value in ipairs(savedConditionalModelParts.body) do
                 value:setVisible(bool)
             end
         end
-
+        
         local slotId = player:getItem(5).id
-
+        
         if slotId == "minecraft:air" then
             frontSidesModelVisibiilty(true)
             backpackModelVisibility(true)
