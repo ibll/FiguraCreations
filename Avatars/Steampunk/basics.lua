@@ -10,6 +10,20 @@ local elytraEnabled
 local armorToggleAction
 local elytraToggleAction
 
+-----------
+-- PINGS --
+-----------
+
+local function quickSync()
+    pings.sync(armorEnabled, elytraEnabled)
+end
+
+function pings.sync(armourState, elytraState)
+    armorEnabled = armourState
+    elytraEnabled = elytraState
+    modifyVisibility()
+end
+
 ---------------
 -- FUNCTIONS --
 ---------------
@@ -41,23 +55,10 @@ local function toggleElytra()
     printState("Elytra Visibility", elytraEnabled)
 end
 
-local function quickSync()
-    pings.sync(armorEnabled, elytraEnabled)
-end
 
 local function modifyVisibility()
     vanilla_model.ARMOR:setVisible(armorEnabled)
     vanilla_model.ELYTRA:setVisible(elytraEnabled)
-end
-
------------
--- PINGS --
------------
-
-function pings.sync(armourState, elytraState)
-    armorEnabled = armourState
-    elytraEnabled = elytraState
-    modifyVisibility()
 end
 
 ---------
