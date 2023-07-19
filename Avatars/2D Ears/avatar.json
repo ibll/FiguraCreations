@@ -1,0 +1,10 @@
+{
+  "name": "2D Ears",
+  "authors": [
+	  "github.com/ibll"
+  ],
+  "color": "#64F",
+  "scripts": [
+    "script"
+  ]
+}
