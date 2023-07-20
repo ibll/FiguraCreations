@@ -94,7 +94,7 @@ function events.tick()
         earsLeftOfScreen = earsShouldBeLeftOfScreen
     end
     
-    print(camIsLeft, ", ", camIsRight, ", ", relAngle, ", ", world:getTime())
+    -- print(camIsLeft, ", ", camIsRight, ", ", relAngle, ", ", world:getTime())
 end
 
 function events.render(delta)
