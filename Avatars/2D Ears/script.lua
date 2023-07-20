@@ -65,8 +65,8 @@ end
 local tick = 0
 local targetTick = 0
 local offset = 0
-local targetoffset = 0
-local earsLeftOfScreen = true
+local targetOffset = 0
+local earsLeftOfScreen = false
 
 ----------------------
 -- Figura Functions --
@@ -117,7 +117,7 @@ function events.tick()
             offsetDiff = -offsetDiff
         end
 
-        targetoffset = targetoffset + offsetDiff
+        targetOffset = targetOffset + offsetDiff
     end
     
     if camIsLeft or camIsRight then
@@ -125,7 +125,7 @@ function events.tick()
             startFlip()
             -- print("Flip!")
         end
-        earsLeftOfScreen = earsShouldBeLeftOfScreen
+        earsLeftOfScreen = targetOffset/180%2 == 0
     end
     
     -- print(camIsLeft, ", ", camIsRight, ", ", relAngle, ", ", world:getTime())
@@ -134,7 +134,7 @@ end
 function events.render(delta)
     if tick < targetTick then
         local timeDiff = 1 - (targetTick - tick)/LERP_TIME
-        offset = math.lerp(offset, targetoffset, timeDiff)
+        offset = math.lerp(offset, targetOffset, timeDiff)
     end
 
     BILLBOARDED_MODELPART:setRot(0, player:getBodyYaw(delta)-client:getCameraRot().y+offset, 0)
