@@ -1,7 +1,7 @@
 local BILLBOARDED_MODELPART = models.model
 
 local LEFT_SIDE_OF_HEAD_BIAS = 25 -- in degrees
-local FLIP_TOLERANCE = 0 -- in degrees
+local FLIP_TOLERANCE = 10 -- in degrees
 local LERP_TIME = 10 -- in ticks
 
 local tick = 0
@@ -24,12 +24,14 @@ function events.tick()
     local relAngle = math.shortAngle(hostDir, relDir)
     local leftAngle = math.shortAngle(relAngle, -90)
     local rightAngle = math.shortAngle(relAngle, 90)
+    
+    local earsShouldBeLeftOfScreen = (leftAngle < -90 - LEFT_SIDE_OF_HEAD_BIAS) or (leftAngle > 90 - LEFT_SIDE_OF_HEAD_BIAS)
 
     local function startFlip()
         targetTick = tick + LERP_TIME
 
         local offsetDiff = 180
-        if relAngle < LEFT_SIDE_OF_HEAD_BIAS then offsetDiff = -offsetDiff end
+        if earsLeftOfScreen then offsetDiff = -offsetDiff end
         -- comment next line to always flip away from camera
         if math.abs(relAngle) > 90 then offsetDiff = -offsetDiff end
         targetoffset = targetoffset + offsetDiff
@@ -40,8 +42,6 @@ function events.tick()
     print(camIsLeft, ", ", camIsRight, ", ", leftAngle, ", ", world:getTime())
 
     if camIsLeft or camIsRight then
-        -- local earsShouldBeLeftOfScreen = relAngle > LEFT_SIDE_OF_HEAD_BIAS
-        local earsShouldBeLeftOfScreen = (leftAngle < -90 - LEFT_SIDE_OF_HEAD_BIAS) or (leftAngle > 90 - LEFT_SIDE_OF_HEAD_BIAS)
         print(earsShouldBeLeftOfScreen)
         if  earsShouldBeLeftOfScreen ~= earsLeftOfScreen then
             startFlip()
