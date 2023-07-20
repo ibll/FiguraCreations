@@ -37,10 +37,12 @@ function events.tick()
 
     local camIsLeft = leftAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE and leftAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE
     local camIsRight = rightAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE and rightAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE
-    -- print(onLeftSide, ", ", onRightSide, ", ", leftAngle, ", ", world:getTime())
+    print(camIsLeft, ", ", camIsRight, ", ", leftAngle, ", ", world:getTime())
 
     if camIsLeft or camIsRight then
-        local earsShouldBeLeftOfScreen = relAngle > LEFT_SIDE_OF_HEAD_BIAS
+        -- local earsShouldBeLeftOfScreen = relAngle > LEFT_SIDE_OF_HEAD_BIAS
+        local earsShouldBeLeftOfScreen = (leftAngle < -90 - LEFT_SIDE_OF_HEAD_BIAS) or (leftAngle > 90 - LEFT_SIDE_OF_HEAD_BIAS)
+        print(earsShouldBeLeftOfScreen)
         if  earsShouldBeLeftOfScreen ~= earsLeftOfScreen then
             startFlip()
             -- print("Flip!")
