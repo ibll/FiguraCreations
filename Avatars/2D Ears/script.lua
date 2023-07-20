@@ -49,6 +49,15 @@ local LEFT_BIAS = 0
 -- in degrees, range where ears will prefer one
 -- side of the head/screen. can be -90 through 90.
 
+local function getRotationOfParent()
+    return -math.shortAngle(player:getRot().y, -90)
+end
+-- the angle to consider as the "base" of the
+-- billboarded part. the default is when it's
+-- placed on the head.
+-- i've not tried modifying this, i've just
+-- put it here for ease of access. good luck!
+
 ----------
 -- Vars --
 ----------
@@ -69,7 +78,7 @@ function events.tick()
     local camPos = client:getCameraPos()
     local plaPos = player:getPos()
     local relDir = math.atan(camPos.z - plaPos.z, camPos.x - plaPos.x)*180/math.pi
-    local hostDir = -math.shortAngle(player:getRot().y, -90)
+    local hostDir = getRotationOfParent()
     local relAngle = math.shortAngle(hostDir, relDir + FRONT_ANGLE)
     local leftAngle = math.shortAngle(relAngle, -90)
     local rightAngle = math.shortAngle(relAngle, 90)
