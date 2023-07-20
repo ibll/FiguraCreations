@@ -1,6 +1,6 @@
 local BILLBOARDED_MODELPART = models.model
 
-local LEFT_SIDE_OF_HEAD_BIAS = 25 -- in degrees
+local LEFT_SIDE_OF_HEAD_BIAS = 0 -- in degrees, -90-90
 local FLIP_TOLERANCE = 10 -- in degrees
 local LERP_TIME = 10 -- in ticks
 
@@ -25,6 +25,8 @@ function events.tick()
     local leftAngle = math.shortAngle(relAngle, -90)
     local rightAngle = math.shortAngle(relAngle, 90)
     
+    local camIsLeft = leftAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE and leftAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE
+    local camIsRight = rightAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE and rightAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE
     local earsShouldBeLeftOfScreen = (leftAngle < -90 - LEFT_SIDE_OF_HEAD_BIAS) or (leftAngle > 90 - LEFT_SIDE_OF_HEAD_BIAS)
 
     local function startFlip()
@@ -36,20 +38,16 @@ function events.tick()
         if math.abs(relAngle) > 90 then offsetDiff = -offsetDiff end
         targetoffset = targetoffset + offsetDiff
     end
-
-    local camIsLeft = leftAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE and leftAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE
-    local camIsRight = rightAngle < 90 - LEFT_SIDE_OF_HEAD_BIAS - FLIP_TOLERANCE and rightAngle > -90 - LEFT_SIDE_OF_HEAD_BIAS + FLIP_TOLERANCE
-    print(camIsLeft, ", ", camIsRight, ", ", leftAngle, ", ", world:getTime())
-
+    
     if camIsLeft or camIsRight then
-        print(earsShouldBeLeftOfScreen)
         if  earsShouldBeLeftOfScreen ~= earsLeftOfScreen then
             startFlip()
             -- print("Flip!")
         end
         earsLeftOfScreen = earsShouldBeLeftOfScreen
     end
-
+    
+    -- print(camIsLeft, ", ", camIsRight, ", ", relAngle, ", ", world:getTime())
 end
 
 function events.render(delta)
