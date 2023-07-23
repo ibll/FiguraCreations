@@ -56,6 +56,17 @@ local blockInfos = {
             Base = "minecraft:textures/block/anvil.png",
         },
     },
+    {
+        name = "Wool",
+        variants = {
+            {
+                name = "White Wool",
+                id = "minecraft:white_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/white_wool.png"
+            }
+        }
+    }
 }
 
 ----------
@@ -69,6 +80,9 @@ local snapMode = "Rounded"
 local savedPosition
 local snapApplied = false
 
+local mainPage
+local blockPage
+local variantPages = {}
 local snapModeAction
 local blockCycleAction
 
@@ -226,24 +240,61 @@ local function applyBlock(id)
             models.model.root[blockInfo.bone][index]:setPrimaryTexture("RESOURCE", value)
         end
     end
-    
+
+    blockPage:getAction(blockIndex + 1):setColor(nil)
+    blockPage:getAction(id + 1):setColor(ENABLED_COLOR)
+
     blockCycleAction:title(blockInfo.name)
     blockCycleAction:item(blockInfo.id)
+
+    blockIndex = id
 end
 
-local function cycleBlock()
-    blockIndex = blockIndex + 1
-    if blockIndex > #blockInfos then blockIndex = 1 end
-    applyBlock(blockIndex)
+local function blockActionExecute(key, value)
+    if value.variants ~= nil then
+        if variantPages[value.name] == nil then
+            local variantPage = action_wheel:newPage(value.name)
+
+            for variantKey, variantValue in ipairs(value.variants) do
+                local action = variantPage:newAction()
+                    :item(variantValue.id)
+                    :title(variantValue.name)
+                    :onLeftClick(function() blockActionExecute(variantKey, variantValue) end)
+            end
+
+            variantPages[value.name] = variantPage
+        end
+
+        action_wheel:setPage(variantPages[value.name])
+    else
+        applyBlock(key)
+        action_wheel:setPage(mainPage)
+    end
+end
+
+local function generateBlockPage()
+    blockPage = action_wheel:newPage("Blocks")
+    
+    blockPage:newAction()
+        :title("Back")
+        :item('minecraft:barrier')
+        :onLeftClick(function() action_wheel:setPage(mainPage) end)
+
+    for key, value in ipairs(blockInfos) do
+        local action = blockPage:newAction()
+            :item(value.id)
+            :title(value.name)
+            :onLeftClick(function() blockActionExecute(key, value) end)
+    end
 end
 
 -- build mode
 
 function pings.place(pos)
-    Copy = models.model.root:copy("Block")
-    models.model.World:addChild(Copy)
-    Copy:setVisible(true)
-    Copy:setPos(pos)
+    local copy = models.model.root:copy("Block")
+    models.model.World:addChild(copy)
+    copy:setVisible(true)
+    copy:setPos(pos)
 end
 
 ------------
@@ -255,10 +306,10 @@ function events.entity_init()
     setVisibleAsProp(true)
 
     -- action wheel
-	ActionWheelPg1 = action_wheel:newPage("Functions")
-	action_wheel:setPage(ActionWheelPg1)
+	mainPage = action_wheel:newPage("Functions")
+	action_wheel:setPage(mainPage)
 
-    local seekerToggleAction = ActionWheelPg1:newAction()
+    local seekerToggleAction = mainPage:newAction()
 		:item("minecraft:grass_block")
 		:title("Current Mode: Prop")
 		:color(DISABLED_COLOR)
@@ -268,12 +319,12 @@ function events.entity_init()
 		:toggleColor(ENABLED_COLOR)
     seekerToggleAction:setToggled(seekerEnabled)
 
-    snapModeAction = ActionWheelPg1:newAction()
+    snapModeAction = mainPage:newAction()
         :item("minecraft:ender_pearl")
         :title("Snap Mode: Rounded")
         :onLeftClick(cycleSnapMode)
 
-    local buildModeToggleAction = ActionWheelPg1:newAction()
+    local buildModeToggleAction = mainPage:newAction()
 		:item("minecraft:diamond_shovel")
 		:title("Building Mode: Disabled")
 		:color(DISABLED_COLOR)
@@ -283,11 +334,12 @@ function events.entity_init()
 		:toggleColor(ENABLED_COLOR)
     buildModeToggleAction:setToggled(buildModeEnabled)
 
-    blockCycleAction = ActionWheelPg1:newAction()
+    blockCycleAction = mainPage:newAction()
         :item("minecraft:dirt")
         :title("Dirt")
-        :onLeftClick(cycleBlock)
+        :onLeftClick(function() action_wheel:setPage(blockPage) end)
 
+    generateBlockPage()
     applyBlock(1)
 end
 
