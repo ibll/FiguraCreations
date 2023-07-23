@@ -1,6 +1,9 @@
 local RISE_ANIMATION = animations.Horsey.rise
 local FALL_ANIMATION = animations.Horsey.fall
 
+local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
+local DISABLED_COLOR = vectors.hexToRGB("#F38bA8")
+
 local risen = false
 local riseToggleAction
 
