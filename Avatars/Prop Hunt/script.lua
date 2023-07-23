@@ -1,7 +1,6 @@
 local dataAPI = require("Scripts.data")
 local actionWheelAPI = require("Scripts.actionWheel")
-local movementAPI = require("Scripts.movement")
-local blockAPI = require("Scripts.block")
+local playerAPI = require("Scripts.player")
 
 local blockInfos = require("blockInfos")
 
@@ -10,7 +9,7 @@ local blockInfos = require("blockInfos")
 ---------------
 
 function pings.applyBlock(blockInfo)
-    blockAPI.applyBlock(blockInfo)
+    playerAPI.applyBlock(blockInfo)
 end
 
 function pings.place(pos)
@@ -30,13 +29,13 @@ function events.entity_init()
     action_wheel:setPage(actionWheelAPI.mainPage)
 
     -- setup
-    movementAPI.setVisibleAsProp(true)
-    blockAPI.applyBlock(dataAPI.selectedBlockInfo)
+    playerAPI.setVisibleAsProp(true)
+    playerAPI.applyBlock(dataAPI.selectedBlockInfo)
 end
 
 function events.tick()
     dataAPI.lazySync()
-    movementAPI.tick()
+    playerAPI.tick()
 end
 
 function events.MOUSE_PRESS(button, state, modifiers)

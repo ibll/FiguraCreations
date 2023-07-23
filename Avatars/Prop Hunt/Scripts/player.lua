@@ -1,19 +1,20 @@
 local dataAPI = require("Scripts.data")
-
-local movementAPI = {}
-
-movementAPI.ticksInSameBlock = 0
+local actionWheelAPI = require("Scripts.actionWheel")
 
 local savedPosition
 local snapApplied
 
 local seekerApplied = false
 
+local playerAPI = {}
+
+playerAPI.ticksInSameBlock = 0
+
 ---------
 -- API --
 ---------
 
-function movementAPI.applyModelPos() 
+function playerAPI.applyModelPos() 
     local pos = player:getPos()
     local currentPosition
 
@@ -24,12 +25,12 @@ function movementAPI.applyModelPos()
     end
 
     if savedPosition == currentPosition then
-        movementAPI.ticksInSameBlock = movementAPI.ticksInSameBlock + 1
+        playerAPI.ticksInSameBlock = playerAPI.ticksInSameBlock + 1
     else
-        movementAPI.ticksInSameBlock = 0
+        playerAPI.ticksInSameBlock = 0
     end
 
-    if movementAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
+    if playerAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
 
         if snapApplied == false then
@@ -61,7 +62,32 @@ function movementAPI.applyModelPos()
     savedPosition = currentPosition
 end
 
-function movementAPI.setVisibleAsProp(state)
+function playerAPI.applyBlock(blockInfo, noResnap)
+    -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
+    if noResnap ~= true then playerAPI.ticksInSameBlock = 0 end
+    playerAPI.applyModelPos()
+
+    for index, value in ipairs(models.model.root:getChildren()) do
+        value:setVisible(false)
+    end
+    models.model.root[blockInfo.bone]:setVisible(true)
+
+    if blockInfo.texture ~= nil then
+        for index, value in ipairs(models.model.root[blockInfo.bone]:getChildren()) do
+            value:setPrimaryTexture("RESOURCE", blockInfo.texture)
+        end
+    elseif blockInfo.textures ~= nil then
+        for index, value in pairs(blockInfo.textures) do
+            models.model.root[blockInfo.bone][index]:setPrimaryTexture("RESOURCE", value)
+        end
+    end
+
+    actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.id)
+
+    dataAPI.selectedBlockInfo = blockInfo
+end
+
+function playerAPI.setVisibleAsProp(state)
     seekerApplied = not state
 
     vanilla_model.ALL:setVisible(not state)
@@ -72,13 +98,13 @@ function movementAPI.setVisibleAsProp(state)
     renderer:setShadowRadius(ShadowSize)
 end
 
-function movementAPI.tick()
+function playerAPI.tick()
     if dataAPI.seekerEnabled then
-        if not seekerApplied then movementAPI.setVisibleAsProp(false) end
+        if not seekerApplied then playerAPI.setVisibleAsProp(false) end
     else
-        if seekerApplied then movementAPI.setVisibleAsProp(true) end
-        movementAPI.applyModelPos()
+        if seekerApplied then playerAPI.setVisibleAsProp(true) end
+        playerAPI.applyModelPos()
     end
 end
 
-return movementAPI
+return playerAPI
