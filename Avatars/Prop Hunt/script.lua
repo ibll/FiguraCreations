@@ -64,6 +64,96 @@ local blockInfos = {
                 id = "minecraft:white_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/white_wool.png"
+            },
+            {
+                name = "Light Gray Wool",
+                id = "minecraft:light_gray_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/light_gray_wool.png"
+            },
+            {
+                name = "Gray Wool",
+                id = "minecraft:gray_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/gray_wool.png"
+            },
+            {
+                name = "Black Wool",
+                id = "minecraft:black_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/black_wool.png"
+            },
+            {
+                name = "Brown Wool",
+                id = "minecraft:brown_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/brown_wool.png"
+            },
+            {
+                name = "Red Wool",
+                id = "minecraft:red_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/red_wool.png"
+            },
+            {
+                name = "Orange Wool",
+                id = "minecraft:orange_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/orange_wool.png"
+            },
+            {
+                name = "Yellow Wool",
+                id = "minecraft:yellow_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/yellow_wool.png"
+            },
+            {
+                name = "Lime Wool",
+                id = "minecraft:lime_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/lime_wool.png"
+            },
+            {
+                name = "Green Wool",
+                id = "minecraft:green_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/green_wool.png"
+            },
+            {
+                name = "Cyan Wool",
+                id = "minecraft:cyan_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/cyan_wool.png"
+            },
+            {
+                name = "Light Blue Wool",
+                id = "minecraft:light_blue_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/light_blue_wool.png"
+            },
+            {
+                name = "Blue Wool",
+                id = "minecraft:blue_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/blue_wool.png"
+            },
+            {
+                name = "Purple Wool",
+                id = "minecraft:purple_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/purple_wool.png"
+            },
+            {
+                name = "Magenta Wool",
+                id = "minecraft:magenta_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/magenta_wool.png"
+            },
+            {
+                name = "Pink Wool",
+                id = "minecraft:pink_wool",
+                bone = "Block",
+                texture = "minecraft:textures/block/pink_wool.png"
             }
         }
     }
@@ -79,14 +169,13 @@ local ticksInSameBlock = 0
 local snapMode = "Rounded"
 local savedPosition
 local snapApplied = false
+local selectedBlockInfo = blockInfos[1]
 
 local mainPage
 local blockPage
 local variantPages = {}
 local snapModeAction
 local blockCycleAction
-
-local blockIndex = 1
 
 local seekerEnabled = false
 local seekerApplied = false
@@ -97,23 +186,12 @@ local buildModeEnabled = false
 -- Functions --
 ---------------
 
--- syncing
-
-function pings.sync(snapState, seekerState)
+function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     snapMode = snapState
     seekerEnabled = seekerState
-end
+    selectedBlockInfo = selectedBlockState
 
-local function quickSync()
-    pings.sync(snapMode, seekerEnabled)
-end
-
-local function lazySync()
-    syncTick = syncTick + 1
-    if syncTick < 200 then return end
-    if not host:isHost() then return end
-    quickSync()
-    syncTick = 0
+    models.model:setRot(blockRotState)
 end
 
 -- movement handling
@@ -160,7 +238,7 @@ local function applyModelPos()
             models.model:setPos(blockPos)
             
             local blockRot
-            if blockInfos[blockIndex].rotate then
+            if selectedBlockInfo.rotate then
                 blockRot = math.round(player:getRot().y/90) * 90
             end
             models.model:setRot(0, blockRot, 0)
@@ -219,12 +297,10 @@ local function toggleBuildMode(state)
     buildModeEnabled = state
 end
 
-local function applyBlock(id)
+local function applyBlock(blockInfo, noResnap)
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
-    ticksInSameBlock = 0
+    if noResnap ~= true then ticksInSameBlock = 0 end
     applyModelPos()
-
-    local blockInfo = blockInfos[id]
 
     for index, value in ipairs(models.model.root:getChildren()) do
         value:setVisible(false)
@@ -241,33 +317,39 @@ local function applyBlock(id)
         end
     end
 
-    blockPage:getAction(blockIndex + 1):setColor(nil)
-    blockPage:getAction(id + 1):setColor(ENABLED_COLOR)
-
     blockCycleAction:title(blockInfo.name)
     blockCycleAction:item(blockInfo.id)
 
-    blockIndex = id
+    selectedBlockInfo = blockInfo
 end
 
-local function blockActionExecute(key, value)
-    if value.variants ~= nil then
-        if variantPages[value.name] == nil then
-            local variantPage = action_wheel:newPage(value.name)
+function pings.applyBlock(blockInfo)
+    applyBlock(blockInfo)
+end
 
-            for variantKey, variantValue in ipairs(value.variants) do
+local function blockActionExecute(blockInfo)
+    if blockInfo.variants ~= nil then
+        if variantPages[blockInfo.name] == nil then
+            local variantPage = action_wheel:newPage(blockInfo.name)
+
+            variantPage:newAction()
+                :title("Back")
+                :item('minecraft:barrier')
+                :onLeftClick(function() action_wheel:setPage(mainPage) end)
+
+            for variantKey, variantValue in ipairs(blockInfo.variants) do
                 local action = variantPage:newAction()
                     :item(variantValue.id)
                     :title(variantValue.name)
-                    :onLeftClick(function() blockActionExecute(variantKey, variantValue) end)
+                    :onLeftClick(function() blockActionExecute(variantValue) end)
             end
 
-            variantPages[value.name] = variantPage
+            variantPages[blockInfo.name] = variantPage
         end
 
-        action_wheel:setPage(variantPages[value.name])
+        action_wheel:setPage(variantPages[blockInfo.name])
     else
-        applyBlock(key)
+        pings.applyBlock(blockInfo)
         action_wheel:setPage(mainPage)
     end
 end
@@ -281,20 +363,40 @@ local function generateBlockPage()
         :onLeftClick(function() action_wheel:setPage(mainPage) end)
 
     for key, value in ipairs(blockInfos) do
-        local action = blockPage:newAction()
-            :item(value.id)
+        local blockSelectAction = blockPage:newAction()
             :title(value.name)
-            :onLeftClick(function() blockActionExecute(key, value) end)
+            :onLeftClick(function() blockActionExecute(value) end)
+
+        if value.variants == nil then
+            blockSelectAction:item(value.id)
+        else
+            blockSelectAction:item(value.variants[1].id)
+        end
     end
 end
-
--- build mode
 
 function pings.place(pos)
     local copy = models.model.root:copy("Block")
     models.model.World:addChild(copy)
     copy:setVisible(true)
     copy:setPos(pos)
+end
+
+local function quickSync()
+    if not host:isHost() then return end
+
+    local currentRot = models.model:getRot()
+
+    pings.sync(snapMode, seekerEnabled, selectedBlockInfo, currentRot)
+    applyBlock(selectedBlockInfo, true)
+end
+
+local function lazySync()
+    syncTick = syncTick + 1
+    if syncTick < 200 then return end
+    if not host:isHost() then return end
+    quickSync()
+    syncTick = 0
 end
 
 ------------
@@ -340,7 +442,7 @@ function events.entity_init()
         :onLeftClick(function() action_wheel:setPage(blockPage) end)
 
     generateBlockPage()
-    applyBlock(1)
+    applyBlock(selectedBlockInfo)
 end
 
 function events.tick()
