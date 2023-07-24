@@ -1,0 +1,187 @@
+local dataAPI = require("Scripts.data")
+local blockInfos = require("blockInfos")
+
+local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
+local ENABLED_COLOR_HOVER = vectors.hexToRGB("#4Af43A")
+local DISABLED_COLOR = vectors.hexToRGB("#F38bA8")
+local DISABLED_COLOR_HOVER = vectors.hexToRGB("#DD0845")
+
+local seekerToggleAction
+local snapModeAction
+local blockChangeAction
+
+local variantPages = {}
+
+local actionWheelAPI = {}
+
+---------------
+-- Functions --
+---------------
+
+local function printState(string, state)
+    function State(value)
+        if value == true or value == false then
+            if value then return "§aEnabled" else return "§cDisabled" end
+        else
+            return "§b" .. value
+        end
+    end
+    print(string .. ": " .. (State(state)))
+end
+
+local function toggleSeeker(state)
+    dataAPI.seekerEnabled = not state
+    dataAPI.quickSync()
+    printState("Prop Mode", not state)
+    
+    if state then
+        seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
+    else
+        seekerToggleAction:hoverColor(DISABLED_COLOR_HOVER)
+    end
+end
+
+local function applySnapModeActionStyle()
+    if dataAPI.snapMode == "Floored" then
+        snapModeAction
+        :item("minecraft:black_carpet")
+        :title("Snap Mode: Floored")
+        :color(ENABLED_COLOR)
+        :hoverColor(ENABLED_COLOR_HOVER)
+    elseif dataAPI.snapMode == "Disabled" then
+        snapModeAction
+        :item("minecraft:barrier")
+        :title("Snap Mode: Disabled")
+        :color(DISABLED_COLOR)
+        :hoverColor(DISABLED_COLOR_HOVER)
+    else
+        snapModeAction
+        :item("minecraft:ender_pearl")
+        :title("Snap Mode: Rounded")
+        :color(ENABLED_COLOR)
+        :hoverColor(ENABLED_COLOR_HOVER)
+    end
+end
+
+local function cycleSnapMode()
+    print(dataAPI.snapMode)
+    if dataAPI.snapMode == "Rounded" then
+        dataAPI.snapMode = "Floored"
+    elseif dataAPI.snapMode == "Floored" then
+        dataAPI.snapMode = "Disabled"
+    else 
+        dataAPI.snapMode = "Rounded"
+    end
+    applySnapModeActionStyle()
+
+    config:save("SnapMode", dataAPI.snapMode)
+    dataAPI.quickSync()
+    printState("Snapping",  dataAPI.snapMode)
+end
+
+local function toggleBuildMode(state)
+    printState("Build Mode", state)
+    dataAPI.buildModeEnabled = state
+end
+
+local function blockPageAction(blockInfo)
+    if blockInfo.variants ~= nil then
+        if variantPages[blockInfo.name] == nil then
+            local variantPage = action_wheel:newPage(blockInfo.name)
+
+            variantPage:newAction()
+                :title("Back")
+                :item('minecraft:barrier')
+                :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
+
+            for variantKey, variantValue in ipairs(blockInfo.variants) do
+                local action = variantPage:newAction()
+                    :item(variantValue.id)
+                    :title(variantValue.name)
+                    :onLeftClick(function() blockPageAction(variantValue) end)
+            end
+
+            variantPages[blockInfo.name] = variantPage
+        end
+
+        action_wheel:setPage(variantPages[blockInfo.name])
+    else
+        pings.applyBlock(blockInfo)
+        action_wheel:setPage(actionWheelAPI.mainPage)
+    end
+end
+
+-------------------
+-- API Functions --
+-------------------
+
+function actionWheelAPI.generateMainPage()
+    local mainPage = action_wheel:newPage("Functions")
+
+    seekerToggleAction = mainPage:newAction()
+        :item("minecraft:netherite_sword")
+        :title("Current Mode: Seeker")
+        :color(DISABLED_COLOR)
+        :onToggle(toggleSeeker)
+        :toggleItem("minecraft:grass_block")
+        :toggleTitle("Current Mode: Prop")
+        :toggleColor(ENABLED_COLOR)
+    seekerToggleAction:setToggled(not dataAPI.seekerEnabled)
+
+    if dataAPI.seekerEnabled then
+        seekerToggleAction:hoverColor(DISABLED_COLOR_HOVER)
+    else
+        seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
+    end
+
+    snapModeAction = mainPage:newAction()
+        :onLeftClick(cycleSnapMode)
+    applySnapModeActionStyle()
+
+    -- local buildModeToggleAction = mainPage:newAction()
+    --     :item("minecraft:diamond_shovel")
+    --     :title("Building Mode: Disabled")
+    --     :color(DISABLED_COLOR)
+    --     :onToggle(toggleBuildMode)
+    --     :toggleItem("minecraft:dispenser")
+    --     :toggleTitle("Building Mode: Enabled")
+    --     :toggleColor(ENABLED_COLOR)
+    -- buildModeToggleAction:setToggled(dataAPI.buildModeEnabled)
+
+    blockChangeAction = mainPage:newAction()
+        :item("minecraft:dirt")
+        :title("Dirt")
+        :onLeftClick(function() action_wheel:setPage(actionWheelAPI.blockPage) end)
+
+    actionWheelAPI.mainPage = mainPage
+end
+
+function actionWheelAPI.generateBlockPage()
+    local blockPage = action_wheel:newPage("Blocks")
+    
+    blockPage:newAction()
+        :title("Back")
+        :item('minecraft:barrier')
+        :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
+
+    for key, value in ipairs(blockInfos) do
+        local blockSelectAction = blockPage:newAction()
+            :title(value.name)
+            :onLeftClick(function() blockPageAction(value) end)
+
+        if value.variants == nil then
+            blockSelectAction:item(value.id)
+        else
+            blockSelectAction:item(value.variants[1].id)
+        end
+    end
+
+    actionWheelAPI.blockPage = blockPage
+end
+
+function actionWheelAPI.setSelectedBlock(title, id)
+    blockChangeAction:title(title)
+    blockChangeAction:item(id)
+end
+
+return actionWheelAPI

@@ -1,150 +1,61 @@
-ENABLED_COLOR = vectors.hexToRGB("#a6e3a1")
-DISABLED_COLOR = vectors.hexToRGB("#f38ba8")
+local dataAPI = require("Scripts.data")
+local actionWheelAPI = require("Scripts.actionWheel")
+local playerAPI = require("Scripts.player")
 
--- figura functions
+local blockInfos = require("blockInfos")
+
+---------------
+-- Functions --
+---------------
+
+function pings.applyBlock(blockInfo)
+    playerAPI.applyBlock(blockInfo)
+end
+
+function pings.place(pos)
+    local copy = models.model.root:copy("Block")
+    models.model.World:addChild(copy)
+    copy:setVisible(true)
+    copy:setPos(pos)
+end
+
+------------
+-- Figura --
+------------
 
 function events.entity_init()
+    actionWheelAPI.generateMainPage()
+    actionWheelAPI.generateBlockPage()
+    action_wheel:setPage(actionWheelAPI.mainPage)
+
     -- setup
-    VisibleAsProp(true)
-
-    -- vars
-    SyncTick = 0
-    SnapMode = "Rounded"
-    SeekerEnabled = false
-    SeekerApplied = false
-    TicksInSameBlock = 0
-    SoundEffectPlayed = false
-
-    -- action wheel
-	ActionWheelPg1 = action_wheel:newPage("Functions")
-	action_wheel:setPage(ActionWheelPg1)
-
-    SeekerToggleAction = ActionWheelPg1:newAction()
-		:item("minecraft:grass_block")
-		:title("Current Mode: Prop")
-		:color(DISABLED_COLOR)
-		:onToggle(ToggleSeeker)
-        :toggleItem("minecraft:netherite_sword")
-		:toggleTitle("Current Mode: Seeker")
-		:toggleColor(ENABLED_COLOR)
-    SeekerToggleAction:setToggled(SeekerEnabled)
-
-    SnapModeAction = ActionWheelPg1:newAction()
-        :item("minecraft:ender_pearl")
-        :title("Snap Mode: Rounded")
-        :onLeftClick(CycleSnapMode)
-
+    playerAPI.setVisibleAsProp(true)
+    playerAPI.applyBlock(dataAPI.selectedBlockInfo)
 end
 
 function events.tick()
-    if SeekerEnabled then
-        if not SeekerApplied then VisibleAsProp(false) end
-    else
-        if SeekerApplied then VisibleAsProp(true) end
-        ModelPos()
-    end
-    SyncTimer()
+    dataAPI.lazySync()
+    playerAPI.tick()
 end
 
--- helpers
+function events.MOUSE_PRESS(button, state, modifiers)
+    if dataAPI.buildModeEnabled ~= true then return end
+    if state ~= 1 then return end
 
-function VisibleAsProp(state)
-    SeekerApplied = not state
+    local targetedBlock, hitPos, side = player:getTargetedBlock(true, 6)
 
-    vanilla_model.ALL:setVisible(not state)
-    nameplate.ENTITY:setVisible(not state)
-    models.model.root:setVisible(state)
-    if state == true then ShadowSize = 0 else ShadowSize = 0.5 end
-    renderer:setShadowRadius(ShadowSize)
-end
+    local pos = targetedBlock:getPos()*16
+    pos = vec(pos.x+8, pos.y + 0.01, pos.z+8)
 
-function ModelPos() 
-    local pos = player:getPos()
-    if SnapMode == "Floored" then
-        CurrentPosition = pos:floor()
-    else
-        CurrentPosition = vec(math.floor(pos.x), math.round(pos.y), math.floor(pos.z))
-    end
+    local positionOffsetVectors = {
+        up = vec(0, 16, 0),
+        down = vec(0, -16, 0),
+        north = vec(0, 0, -16),
+        south = vec(0, 0, 16),
+        east = vec(16, 0, 0),
+        west = vec(-16, 0, 0),
+    }
+    pos = pos:add(positionOffsetVectors[side])
 
-    if OldPosition == CurrentPosition then
-        TicksInSameBlock = TicksInSameBlock + 1
-    else
-        TicksInSameBlock = 0
-    end
-
-    if TicksInSameBlock >= 20 and SnapMode ~= "Disabled" then
-        models.model:setParentType("WORLD")
-        if SnapMode == "Floored" then
-            BlockPos = vec(math.floor(pos.x)*16 + 8, math.floor(pos.y)*16, math.floor(pos.z)*16 + 8)
-        elseif SnapMode == "Rounded" then
-            BlockPos = vec(math.floor(pos.x)*16 + 8, math.round(pos.y)*16, math.floor(pos.z)*16 + 8)
-        end
-        models.model:setPos(BlockPos)
-
-        if SoundEffectPlayed == false then
-            sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.25, 2, false)
-            SoundEffectPlayed = true
-        end
-    else
-        models.model:setParentType("None")
-        models.model:setPos(0, 0, 0)
-        SoundEffectPlayed = false
-    end
-
-    OldPosition = CurrentPosition
-end
-
-function CycleSnapMode()
-    if SnapMode == "Rounded" then
-        SnapMode = "Floored"
-        SnapModeAction:title("Snap Mode: Floored")
-        SnapModeAction:item("minecraft:black_carpet")
-    elseif SnapMode == "Floored" then
-        SnapMode = "Disabled"
-        SnapModeAction:title("Snap Mode: Disabled")
-        SnapModeAction:item("minecraft:barrier")
-    else 
-        SnapMode = "Rounded"
-        SnapModeAction:title("Snap Mode: Rounded")
-        SnapModeAction:item("minecraft:ender_pearl")
-    end
-    config:save("SnapMode", SnapMode)
-    Sync()
-    PrintState("Snapping",  SnapMode)
-end
-
-function ToggleSeeker(state)
-	PrintState("Seeker", state)
-	SeekerEnabled = state
-	Sync()
-end
-
-function PrintState(string, state)
-    function State(value)
-        if value == true or value == false then
-            if value then return "§aEnabled" else return "§cDisabled" end
-        else
-            return "§b" .. value
-        end
-    end
-    print(string .. ": " .. (State(state)))
-end
-
-function SyncTimer()
-    SyncTick = SyncTick + 1
-    if SyncTick < 200 then return end
-    if not host:isHost() then return end
-    Sync()
-    SyncTick = 0
-end
-
-function Sync()
-    pings.sync(SnapMode, SeekerEnabled)
-end
-
--- pings
-
-function pings.sync(SnapState, SeekerState)
-    SnapMode = SnapState
-    SeekerEnabled = SeekerState
+    pings.place(pos)
 end
