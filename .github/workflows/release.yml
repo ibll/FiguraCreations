@@ -17,11 +17,13 @@ jobs:
         uses: actions/checkout@v3
       - name: Zip Releases
         uses: ./.github/actions/zip-releases
+        with:
+          input-dir: 'Avatars'
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
-          path: 'Zips/'
-          name: 'zips'
+          path: '.github/outputs/'
+          name: 'Outputs'
       - name: Update Tag
         uses: EndBug/latest-tag@latest
         with:
@@ -31,7 +33,7 @@ jobs:
         with:
           tag: 'Avatar-Downloads'
           name: 'Avatar Downloads'
-          artifacts: 'Zips/**.zip'
+          artifacts: '.github/outputs/**.zip'
           removeArtifacts: true
           replacesArtifacts: true
           allowUpdates: true

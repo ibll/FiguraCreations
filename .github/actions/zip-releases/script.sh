@@ -1,9 +1,10 @@
 # /bin/bash
 
-mkdir Zips
-cd Avatars
+dir=$(pwd)
+
+mkdir -p "$OUTPUT_DIR"
+cd $INPUT_DIR
 
 for folder in *; do
-    echo folder
-    zip -r "../Zips/${folder}.zip" "$folder"
+    zip -r "${dir}/${OUTPUT_DIR}/${folder}.zip" "$folder"
 done

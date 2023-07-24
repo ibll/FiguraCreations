@@ -1,7 +1,19 @@
 name: Zip Releases
-description: Archives all releases in the Avatars directory to the Zips directory
+description: Zips all releases in the Avatars directory to the .github/outputs/ directory
+inputs:
+  input-dir:
+    description: 'All files/folders inside this directory will be zipped.'
+    default: '.'
+    required: false
+  output-dir:
+    description: 'Location to output zip files'
+    default: '.github/outputs/'
+    required: false
 runs:
   using: composite
   steps: 
-    - run: $GITHUB_ACTION_PATH/script.sh
-      shell: bash
+    - shell: bash
+      env:
+        INPUT_DIR: ${{ inputs.input-dir }}
+        OUTPUT_DIR: ${{ inputs.output-dir }}
+      run: $GITHUB_ACTION_PATH/script.sh
