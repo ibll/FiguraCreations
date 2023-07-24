@@ -1,0 +1,37 @@
+name: Release
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'Avatars/**'
+  workflow_dispatch:
+
+jobs:
+  Zip-and-Release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Zip Releases
+        uses: ./.github/actions/zip-releases
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: 'Zips/'
+          name: 'zips'
+      - name: Update Tag
+        uses: EndBug/latest-tag@latest
+        with:
+          ref: 'Avatar-Downloads'
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          tag: 'Avatar-Downloads'
+          name: 'Avatar Downloads'
+          artifacts: 'Zips/**.zip'
+          removeArtifacts: true
+          replacesArtifacts: true
+          allowUpdates: true

@@ -1,14 +1,14 @@
 # FiguraCreations
 
 ## Crab
-[Folder](/Avatars/Crab/) | [Download](https://github.com/ibll/FiguraCreations/raw/main/Avatars/Crab/Crab.zip)
+[Folder](/Avatars/Crab/) | [Download](https://github.com/ibll/FiguraCreations/releases/download/Avatar-Downloads/Crab.zip)
 <p float=left align=middle>
     <img align=top src="Assets/cr01.png" width=49%>
     <img align=top src="Assets/cr02.png" width=49%>
 </p>
 
 ## Lovely
-[Folder](/Avatars/Lovely/) | [Download](https://github.com/ibll/FiguraCreations/raw/main/Avatars/Lovely/Lovely.zip)
+[Folder](/Avatars/Lovely/) | [Download](https://github.com/ibll/FiguraCreations/releases/download/Avatar-Downloads/Lovely.zip)
 
 Based off of the Fortnite skin
 <p float=left align=middle>
@@ -17,7 +17,7 @@ Based off of the Fortnite skin
 </p>
 
 ## Madeline
-[Folder](/Avatars/MadelineCeleste/) | [Download](https://github.com/ibll/FiguraCreations/raw/main/Avatars/MadelineCeleste/MadelineCeleste.zip)
+[Folder](/Avatars/MadelineCeleste/) | [Download](https://github.com/ibll/FiguraCreations/releases/download/Avatar-Downloads/MadelineCeleste.zip)
 
 From Celeste
 <p float=left align=middle>
@@ -26,7 +26,7 @@ From Celeste
 </p>
 
 ## Ray
-[Folder](/Avatars/Ray/) | [Download](https://github.com/ibll/FiguraCreations/raw/main/Avatars/Ray/Ray.zip)
+[Folder](/Avatars/Ray/) | [Download](https://github.com/ibll/FiguraCreations/releases/download/Avatar-Downloads/Ray.zip)
 
 From Fortnite: Save the World
 <p float=left align=middle>
@@ -35,7 +35,7 @@ From Fortnite: Save the World
 </p>
 
 ## Steampunk
-[Folder](/Avatars/Steampunk/) | [Download](https://github.com/ibll/FiguraCreations/raw/main/Avatars/Steampunk/Steampunk.zip)
+[Folder](/Avatars/Steampunk/) | [Download](https://github.com/ibll/FiguraCreations/releases/download/Avatar-Downloads/Steampunk.zip)
 <p float=left align=middle>
     <img align=top src="Assets/sp01.png" width=49%>
     <img align=top src="Assets/sp02.gif" width=49%>

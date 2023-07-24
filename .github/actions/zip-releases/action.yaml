@@ -1,0 +1,7 @@
+name: Zip Releases
+description: Archives all releases in the Avatars directory to the Zips directory
+runs:
+  using: composite
+  steps: 
+    - run: $GITHUB_ACTION_PATH/script.sh
+      shell: bash
