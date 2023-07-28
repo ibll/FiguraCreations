@@ -1,4 +1,4 @@
-local blockInfos = require("blockInfos")
+local blockInfos, defaultBlockInfo = require("blockInfos")
 
 local syncTick = 0
 
@@ -7,7 +7,7 @@ local dataAPI = {}
 --synced
 dataAPI.snapMode = "Rounded"
 dataAPI.seekerEnabled = false
-dataAPI.selectedBlockInfo = blockInfos[1]
+dataAPI.selectedBlockInfo = defaultBlockInfo
 dataAPI.blockRot = nil
 -- unsynced
 dataAPI.buildModeEnabled = false
