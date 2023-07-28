@@ -90,7 +90,7 @@ local function toggleBuildMode(state)
     dataAPI.buildModeEnabled = state
 end
 
-local function blockPageAction(blockInfo)
+local function blockPageAction(blockInfo, returnPage)
     if blockInfo.variants ~= nil then
         if blockInfo.name == nil then
             print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'name'!")
@@ -103,13 +103,13 @@ local function blockPageAction(blockInfo)
         end
 
         if storedVariantPages[blockInfo.uniqueID] == nil then
-            print("Generating page", blockInfo.uniqueID)
             local variantPage = action_wheel:newPage(blockInfo.uniqueID)
 
             variantPage:newAction()
                 :title("Back")
                 :item('minecraft:barrier')
-                :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
+                :onLeftClick(function() action_wheel:setPage(returnPage) end)
+                :onRightClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
             populatePageBlocks(variantPage, blockInfo.variants)
             storedVariantPages[blockInfo.uniqueID] = variantPage
@@ -129,7 +129,7 @@ function populatePageBlocks(page, blockInfo)
     for key, value in ipairs(blockInfo) do
         local action = page:newAction()
             :title(value.name)
-            :onLeftClick(function() blockPageAction(value) end)
+            :onLeftClick(function() blockPageAction(value, page) end)
 
         if value.id then
             if isValidBlockID(value.id) then
