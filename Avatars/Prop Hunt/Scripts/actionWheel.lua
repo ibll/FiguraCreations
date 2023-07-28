@@ -40,7 +40,7 @@ local function toggleSeeker(state)
     dataAPI.seekerEnabled = not state
     dataAPI.quickSync()
     printState("Prop Mode", not state)
-    
+
     if state then
         seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
     else
@@ -97,13 +97,13 @@ local function blockPageAction(blockInfo, returnPage)
             return
         end
 
-        if blockInfo.uniqueID == nil then
-            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'uniqueID'!")
+        if blockInfo.uniquePageID == nil then
+            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'uniquePageID'!")
             return
         end
 
-        if storedVariantPages[blockInfo.uniqueID] == nil then
-            local variantPage = action_wheel:newPage(blockInfo.uniqueID)
+        if storedVariantPages[blockInfo.uniquePageID] == nil then
+            local variantPage = action_wheel:newPage(blockInfo.uniquePageID)
 
             variantPage:newAction()
                 :title("Back")
@@ -112,10 +112,10 @@ local function blockPageAction(blockInfo, returnPage)
                 :onRightClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
             populatePageBlocks(variantPage, blockInfo.variants)
-            storedVariantPages[blockInfo.uniqueID] = variantPage
+            storedVariantPages[blockInfo.uniquePageID] = variantPage
         end
 
-        action_wheel:setPage(storedVariantPages[blockInfo.uniqueID])
+        action_wheel:setPage(storedVariantPages[blockInfo.uniquePageID])
     else
         pings.applyBlock(blockInfo)
         action_wheel:setPage(actionWheelAPI.mainPage)
@@ -131,18 +131,18 @@ function populatePageBlocks(page, blockInfo)
             :title(value.name)
             :onLeftClick(function() blockPageAction(value, page) end)
 
-        if value.id then
-            if isValidBlockID(value.id) then
-                action:item(value.id)
+        if value.blockID then
+            if isValidBlockID(value.blockID) then
+                action:item(value.blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.id .. "§r` is not a valid block id!")
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.blockID .. "§r` is not a valid block id!")
             end
 
-        elseif value.variants and value.variants[1].id ~= nil then
-            if isValidBlockID(value.variants[1].id) then
-                action:item(value.variants[1].id)
+        elseif value.variants and value.variants[1] and value.variants[1].blockID ~= nil then
+            if isValidBlockID(value.variants[1].blockID) then
+                action:item(value.variants[1].blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.variaints[1].id .. "§r` is not a valid block id!")
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.variaints[1].blockID .. "§r` is not a valid block id!")
             end
 
         end
@@ -207,9 +207,13 @@ function actionWheelAPI.generateBlockPage()
     actionWheelAPI.blockPage = blockPage
 end
 
-function actionWheelAPI.setSelectedBlock(title, id)
+function actionWheelAPI.setSelectedBlock(title, blockID)
     blockChangeAction:title(title)
-    if isValidBlockID(id) then blockChangeAction:item(id) end
+    if isValidBlockID(blockID) then
+        blockChangeAction:item(blockID)
+    else
+        blockChangeAction:item()
+    end
 end
 
 return actionWheelAPI

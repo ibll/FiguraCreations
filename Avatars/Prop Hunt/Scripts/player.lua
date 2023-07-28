@@ -109,7 +109,7 @@ function pings.applyBlock(blockInfo, unsnap)
 
     end
 
-    actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.id)
+    actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.blockID)
 
     dataAPI.selectedBlockInfo = blockInfo
 end

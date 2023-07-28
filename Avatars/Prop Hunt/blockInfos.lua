@@ -1,251 +1,41 @@
 local blockInfos = {
     {
         name = "Natural",
-        id = "minecraft:stone",
-        uniqueID = "natural",
+        -- blockID = "minecraft:stone",
+        uniquePageID = "",
         variants = {
             {
-                name = "No Bone Or Texture",
-                id = "minecraft:crafting_table",
-            },
-            {
-                name = "Ligma",
-                bone = "Block",
-                texture = ""
-            },
-            {
-                name = "Wool",
-                uniqueID = "natural.wool",
-                variants = {
-                    {
-                        name = "White Wool",
-                        id = "minecraft:white_concrete",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/white_wool.png"
-                    },
-                    {
-                        name = "Light Gray Wool",
-                        id = "minecraft:light_gray_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/light_gray_wool.png"
-                    },
-                    {
-                        name = "Gray Wool",
-                        id = "minecraft:gray_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/gray_wool.png"
-                    },
-                    {
-                        name = "Black Wool",
-                        id = "minecraft:black_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/black_wool.png"
-                    },
-                    {
-                        name = "Brown Wool",
-                        id = "minecraft:brown_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/brown_wool.png"
-                    },
-                    {
-                        name = "Red Wool",
-                        id = "minecraft:red_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/red_wool.png"
-                    },
-                    {
-                        name = "Orange Wool",
-                        id = "minecraft:orange_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/orange_wool.png"
-                    },
-                    {
-                        name = "Yellow Wool",
-                        id = "minecraft:yellow_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/yellow_wool.png"
-                    },
-                    {
-                        name = "Lime Wool",
-                        id = "minecraft:lime_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/lime_wool.png"
-                    },
-                    {
-                        name = "Green Wool",
-                        id = "minecraft:green_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/green_wool.png"
-                    },
-                    {
-                        name = "Cyan Wool",
-                        id = "minecraft:cyan_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/cyan_wool.png"
-                    },
-                    {
-                        name = "Light Blue Wool",
-                        id = "minecraft:light_blue_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/light_blue_wool.png"
-                    },
-                    {
-                        name = "Blue Wool",
-                        id = "minecraft:blue_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/blue_wool.png"
-                    },
-                    {
-                        name = "Purple Wool",
-                        id = "minecraft:purple_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/purple_wool.png"
-                    },
-                    {
-                        name = "Magenta Wool",
-                        id = "minecraft:magenta_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/magenta_wool.png"
-                    },
-                    {
-                        name = "Pink Wool",
-                        id = "minecraft:pink_wool",
-                        bone = "Block",
-                        texture = "minecraft:textures/block/pink_wool.png"
-                    },
-                    {
-                        name = "Wool",
-                        uniqueID = "natural.wool.wool",
-                        variants = {
-                            {
-                                name = "White Wool",
-                                id = "minecraft:white_concrete_powder",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/white_wool.png"
-                            },
-                            {
-                                name = "Light Gray Wool",
-                                id = "minecraft:light_gray_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/light_gray_wool.png"
-                            },
-                            {
-                                name = "Gray Wool",
-                                id = "minecraft:gray_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/gray_wool.png"
-                            },
-                            {
-                                name = "Black Wool",
-                                id = "minecraft:black_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/black_wool.png"
-                            },
-                            {
-                                name = "Brown Wool",
-                                id = "minecraft:brown_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/brown_wool.png"
-                            },
-                            {
-                                name = "Red Wool",
-                                id = "minecraft:red_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/red_wool.png"
-                            },
-                            {
-                                name = "Orange Wool",
-                                id = "minecraft:orange_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/orange_wool.png"
-                            },
-                            {
-                                name = "Yellow Wool",
-                                id = "minecraft:yellow_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/yellow_wool.png"
-                            },
-                            {
-                                name = "Lime Wool",
-                                id = "minecraft:lime_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/lime_wool.png"
-                            },
-                            {
-                                name = "Green Wool",
-                                id = "minecraft:green_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/green_wool.png"
-                            },
-                            {
-                                name = "Cyan Wool",
-                                id = "minecraft:cyan_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/cyan_wool.png"
-                            },
-                            {
-                                name = "Light Blue Wool",
-                                id = "minecraft:light_blue_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/light_blue_wool.png"
-                            },
-                            {
-                                name = "Blue Wool",
-                                id = "minecraft:blue_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/blue_wool.png"
-                            },
-                            {
-                                name = "Purple Wool",
-                                id = "minecraft:purple_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/purple_wool.png"
-                            },
-                            {
-                                name = "Magenta Wool",
-                                id = "minecraft:magenta_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/magenta_wool.png"
-                            },
-                            {
-                                name = "Pink Wool",
-                                id = "minecraft:pink_wool",
-                                bone = "Block",
-                                texture = "minecraft:textures/block/pink_wool.png"
-                            }
-                        }
-                    }
-                }
+                name = "Hello"
             }
         }
     },
     {
         name = "Dirt",
-        id = "minecraft:dirt",
+        blockID = "minecraft:dirt",
         bone = "Block",
         texture = "minecraft:textures/block/dirt.png",
     },
     {
         name = "Cobblestone",
-        id = "minecraft:cobblestone",
+        blockID = "minecraft:cobblestone",
         bone = "Block",
         texture = "minecraft:textures/block/cobblestone.png",
     },
     {
         name = "Bedrock",
-        id = "minecraft:bedrock",
+        blockID = "minecraft:bedrock",
         bone = "Block",
         texture = "minecraft:textures/block/bedrock.png",
     },
     {
         name = "Lantern",
-        id = "minecraft:lantern",
+        blockID = "minecraft:lantern",
         bone = "Lantern",
         texture = "minecraft:textures/block/lantern.png",
     },
     {
         name = "Crafting Table",
-        id = "minecraft:crafting_table",
+        blockID = "minecraft:crafting_table",
         bone = "Block",
         textures = {
             Bottom = "minecraft:textures/block/oak_planks.png",
@@ -258,7 +48,7 @@ local blockInfos = {
     },
     {
         name = "Anvil",
-        id = "minecraft:anvil",
+        blockID = "minecraft:anvil",
         rotate = true,
         bone = "Anvil",
         textures = {
@@ -271,101 +61,101 @@ local blockInfos = {
     },
     {
         name = "Wool",
-        uniqueID = "wool",
+        uniquePageID = "wool",
         variants = {
             {
                 name = "White Wool",
-                id = "minecraft:white_wool",
+                blockID = "minecraft:white_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/white_wool.png"
             },
             {
                 name = "Light Gray Wool",
-                id = "minecraft:light_gray_wool",
+                blockID = "minecraft:light_gray_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/light_gray_wool.png"
             },
             {
                 name = "Gray Wool",
-                id = "minecraft:gray_wool",
+                blockID = "minecraft:gray_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/gray_wool.png"
             },
             {
                 name = "Black Wool",
-                id = "minecraft:black_wool",
+                blockID = "minecraft:black_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/black_wool.png"
             },
             {
                 name = "Brown Wool",
-                id = "minecraft:brown_wool",
+                blockID = "minecraft:brown_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/brown_wool.png"
             },
             {
                 name = "Red Wool",
-                id = "minecraft:red_wool",
+                blockID = "minecraft:red_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/red_wool.png"
             },
             {
                 name = "Orange Wool",
-                id = "minecraft:orange_wool",
+                blockID = "minecraft:orange_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/orange_wool.png"
             },
             {
                 name = "Yellow Wool",
-                id = "minecraft:yellow_wool",
+                blockID = "minecraft:yellow_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/yellow_wool.png"
             },
             {
                 name = "Lime Wool",
-                id = "minecraft:lime_wool",
+                blockID = "minecraft:lime_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/lime_wool.png"
             },
             {
                 name = "Green Wool",
-                id = "minecraft:green_wool",
+                blockID = "minecraft:green_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/green_wool.png"
             },
             {
                 name = "Cyan Wool",
-                id = "minecraft:cyan_wool",
+                blockID = "minecraft:cyan_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/cyan_wool.png"
             },
             {
                 name = "Light Blue Wool",
-                id = "minecraft:light_blue_wool",
+                blockID = "minecraft:light_blue_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/light_blue_wool.png"
             },
             {
                 name = "Blue Wool",
-                id = "minecraft:blue_wool",
+                blockID = "minecraft:blue_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/blue_wool.png"
             },
             {
                 name = "Purple Wool",
-                id = "minecraft:purple_wool",
+                blockID = "minecraft:purple_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/purple_wool.png"
             },
             {
                 name = "Magenta Wool",
-                id = "minecraft:magenta_wool",
+                blockID = "minecraft:magenta_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/magenta_wool.png"
             },
             {
                 name = "Pink Wool",
-                id = "minecraft:pink_wool",
+                blockID = "minecraft:pink_wool",
                 bone = "Block",
                 texture = "minecraft:textures/block/pink_wool.png"
             }
