@@ -2,62 +2,77 @@ local blockInfos = {
     {
         name = "Natural",
         -- blockID = "minecraft:stone",
-        uniquePageID = "",
+        uniquePageID = "natural",
         variants = {
             {
-                name = "Hello"
-            }
+                name = "Dirt",
+                blockID = "minecraft:dirt",
+                bone = "Block",
+                texture = "minecraft:textures/block/dirt.png",
+            },
+            {
+                name = "Sand",
+                blockID = "minecraft:sand",
+                bone = "Block",
+                texture = "minecraft:textures/block/sand.png",
+            },
+            {
+                name = "Stone",
+                blockID = "minecraft:stone",
+                bone = "Block",
+                texture = "minecraft:textures/block/stone.png",
+            },
+            {
+                name = "Cobblestone",
+                blockID = "minecraft:cobblestone",
+                bone = "Block",
+                texture = "minecraft:textures/block/cobblestone.png",
+            },
+            {
+                name = "Bedrock",
+                blockID = "minecraft:bedrock",
+                bone = "Block",
+                texture = "minecraft:textures/block/bedrock.png",
+            },
         }
     },
     {
-        name = "Dirt",
-        blockID = "minecraft:dirt",
-        bone = "Block",
-        texture = "minecraft:textures/block/dirt.png",
-    },
-    {
-        name = "Cobblestone",
-        blockID = "minecraft:cobblestone",
-        bone = "Block",
-        texture = "minecraft:textures/block/cobblestone.png",
-    },
-    {
-        name = "Bedrock",
-        blockID = "minecraft:bedrock",
-        bone = "Block",
-        texture = "minecraft:textures/block/bedrock.png",
-    },
-    {
-        name = "Lantern",
-        blockID = "minecraft:lantern",
-        bone = "Lantern",
-        texture = "minecraft:textures/block/lantern.png",
-    },
-    {
-        name = "Crafting Table",
-        blockID = "minecraft:crafting_table",
-        bone = "Block",
-        textures = {
-            Bottom = "minecraft:textures/block/oak_planks.png",
-            Top = "minecraft:textures/block/crafting_table_top.png",
-            North = "minecraft:textures/block/crafting_table_front.png",
-            South = "minecraft:textures/block/crafting_table_side.png",
-            East = "minecraft:textures/block/crafting_table_side.png",
-            West = "minecraft:textures/block/crafting_table_front.png",
-        },
-    },
-    {
-        name = "Anvil",
-        blockID = "minecraft:anvil",
-        rotate = true,
-        bone = "Anvil",
-        textures = {
-            TopTop = "minecraft:textures/block/anvil_top.png",
-            TopBody = "minecraft:textures/block/anvil.png",
-            Middle = "minecraft:textures/block/anvil.png",
-            LowerMid = "minecraft:textures/block/anvil.png",
-            Base = "minecraft:textures/block/anvil.png",
-        },
+        name = "Man-Made",
+        uniquePageID = "man-made",
+        variants = {
+            {
+                name = "Lantern",
+                blockID = "minecraft:lantern",
+                bone = "Lantern",
+                texture = "minecraft:textures/block/lantern.png",
+            },
+            {
+                name = "Crafting Table",
+                blockID = "minecraft:crafting_table",
+                bone = "Block",
+                textures = {
+                    Bottom = "minecraft:textures/block/oak_planks.png",
+                    Top = "minecraft:textures/block/crafting_table_top.png",
+                    North = "minecraft:textures/block/crafting_table_front.png",
+                    South = "minecraft:textures/block/crafting_table_side.png",
+                    East = "minecraft:textures/block/crafting_table_side.png",
+                    West = "minecraft:textures/block/crafting_table_front.png",
+                },
+            },
+            {
+                name = "Anvil",
+                blockID = "minecraft:anvil",
+                rotate = true,
+                bone = "Anvil",
+                textures = {
+                    TopTop = "minecraft:textures/block/anvil_top.png",
+                    TopBody = "minecraft:textures/block/anvil.png",
+                    Middle = "minecraft:textures/block/anvil.png",
+                    LowerMid = "minecraft:textures/block/anvil.png",
+                    Base = "minecraft:textures/block/anvil.png",
+                },
+            },
+        }
     },
     {
         name = "Wool",
@@ -163,6 +178,6 @@ local blockInfos = {
     }
 }
 
-local defaultBlockInfo = blockInfos[2]
+local defaultBlockInfo = blockInfos[1].variants[1]
 
 return blockInfos, defaultBlockInfo

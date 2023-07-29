@@ -81,12 +81,25 @@ function pings.applyBlock(blockInfo, unsnap)
         end
     end
 
+    if (blockInfo.texture or blockInfo.textures) and blockInfo.bone == nil then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have a 'bone' when either 'texture' or 'textures' are defined.")
+        return
+    end
+
+    if models.model.root[blockInfo.bone] and blockInfo.textures ~= nil then
+        for index, value in pairs(blockInfo.textures) do
+            if models.model.root[blockInfo.bone][index] == nil then
+                print("§4Error!\n§cInvalid Block Info!§r\n§b" .. index .. "§r is not a bone in §b" .. blockInfo.bone .. "§r! Check", blockInfo.textures)
+                return
+            end
+        end
+    end
+
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then
         playerAPI.ticksInSameBlock = 0
         playerAPI.applyModelPos()
     end
-
 
     for index, value in ipairs(models.model.root:getChildren()) do
         value:setVisible(false)
