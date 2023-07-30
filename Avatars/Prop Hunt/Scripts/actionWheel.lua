@@ -146,6 +146,13 @@ function populatePageBlocks(page, blockInfo)
             end
 
         end
+
+        if value.rightClick then
+            print(value.rightClick)
+            local rightClickTexture = textures["Click"]
+            action:texture(rightClickTexture)
+            action:onRightClick(function() blockPageAction(value.rightClick, page) end)
+        end
     end
 end
 

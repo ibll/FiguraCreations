@@ -45,8 +45,18 @@ function playerAPI.applyModelPos()
             models.model:setPos(blockPos)
 
             local blockRot
-            if dataAPI.selectedBlockInfo.rotate then
+            if dataAPI.selectedBlockInfo.rotate == "Any" then
                 blockRot = math.round(player:getRot().y/90) * 90
+                if blockRot % 180 == 0 then blockRot = blockRot + 180 end
+
+            elseif dataAPI.selectedBlockInfo.rotate == "Limited" then
+                blockRot = math.abs(math.round(player:getRot().y/90) * 90)
+                if blockRot % 360 == 0 then
+                    blockRot = blockRot + 180
+                elseif (blockRot + 90) % 360 == 0 then
+                    blockRot = blockRot + 180
+                end
+
             end
             models.model:setRot(0, blockRot, 0)
 
@@ -83,6 +93,11 @@ function pings.applyBlock(blockInfo, unsnap)
 
     if (blockInfo.texture or blockInfo.textures) and blockInfo.bone == nil then
         print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have a 'bone' when either 'texture' or 'textures' are defined.")
+        return
+    end
+
+    if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited") then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", or nil.")
         return
     end
 
