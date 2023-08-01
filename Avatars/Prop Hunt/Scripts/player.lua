@@ -97,7 +97,7 @@ function pings.applyBlock(blockInfo, unsnap)
     end
 
     if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited" and blockInfo.rotate ~= "LimitedFlipWE") then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", or nil.")
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", \"LimitedFlipWE\" or nil.")
         return
     end
 
