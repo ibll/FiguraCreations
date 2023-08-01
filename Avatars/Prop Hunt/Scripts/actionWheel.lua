@@ -149,9 +149,16 @@ function populatePageBlocks(page, blockInfo)
 
         if value.rightClick then
             print(value.rightClick)
-            local rightClickTexture = textures["Click"]
-            action:texture(rightClickTexture)
             action:onRightClick(function() blockPageAction(value.rightClick, page) end)
+        end
+
+        if value.actionTexture then
+            local wheelTexture = textures[value.actionTexture]
+            if wheelTexture then
+                action:texture(wheelTexture)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.actionTexture .. "§r` is not a valid Blockbench texture!")
+            end
         end
     end
 end

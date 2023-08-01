@@ -94,6 +94,7 @@ local blockInfos = {
                 name = "Hay Bale",
                 blockID = "minecraft:hay_block",
                 bone = "Block",
+                actionTexture = "Click",
                 textures = {
                     Bottom = "minecraft:textures/block/hay_block_top.png",
                     Top = "minecraft:textures/block/hay_block_top.png",
