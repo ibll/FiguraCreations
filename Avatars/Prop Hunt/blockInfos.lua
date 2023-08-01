@@ -53,11 +53,12 @@ local blockInfos = {
             {
                 name = "Anvil",
                 blockID = "minecraft:anvil",
-                rotate = "Limited",
+                rotate = "LimitedFlipWE",
             },
             {
                 name = "Hay Bale",
                 blockID = "minecraft:hay_block",
+                actionTexture = "Click",
                 rightClick = {
                     name = "Hay Bale",
                     blockID = "minecraft:hay_block[axis=z]",

@@ -56,12 +56,19 @@ function playerAPI.applyModelPos()
 
             elseif dataAPI.selectedBlockInfo.rotate == "Limited" then
                 blockRot = math.abs(math.round(player:getRot().y/90) * 90)
-                if blockRot % 360 == 0 then
+                if (blockRot + 180) % 360 == 0 then
+                    blockRot = blockRot + 180
+                elseif (blockRot + 270) % 360 == 0 then
+                    blockRot = blockRot + 180
+                end
+
+            elseif dataAPI.selectedBlockInfo.rotate == "LimitedFlipWE" then
+                blockRot = math.abs(math.round(player:getRot().y/90) * 90)
+                if (blockRot + 180) % 360 == 0 then
                     blockRot = blockRot + 180
                 elseif (blockRot + 90) % 360 == 0 then
                     blockRot = blockRot + 180
                 end
-
             end
             models.model.root:setRot(0, blockRot, 0)
 
@@ -89,7 +96,7 @@ function pings.applyBlock(blockInfo, unsnap)
         return
     end
 
-    if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited") then
+    if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited" and blockInfo.rotate ~= "LimitedFlipWE") then
         print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", or nil.")
         return
     end
