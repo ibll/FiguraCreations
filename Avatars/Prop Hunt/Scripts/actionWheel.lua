@@ -10,9 +10,11 @@ local seekerToggleAction
 local snapModeAction
 local blockChangeAction
 
-local variantPages = {}
+local storedVariantPages = {}
 
 local actionWheelAPI = {}
+
+local populatePageBlocks
 
 ---------------
 -- Functions --
@@ -29,11 +31,16 @@ local function printState(string, state)
     print(string .. ": " .. (State(state)))
 end
 
+local function isValidBlockID(id)
+    local function tryId(inputID) return world.newItem(inputID) end
+    return pcall(tryId, id)
+end
+
 local function toggleSeeker(state)
     dataAPI.seekerEnabled = not state
     dataAPI.quickSync()
     printState("Prop Mode", not state)
-    
+
     if state then
         seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
     else
@@ -64,7 +71,6 @@ local function applySnapModeActionStyle()
 end
 
 local function cycleSnapMode()
-    print(dataAPI.snapMode)
     if dataAPI.snapMode == "Rounded" then
         dataAPI.snapMode = "Floored"
     elseif dataAPI.snapMode == "Floored" then
@@ -84,30 +90,75 @@ local function toggleBuildMode(state)
     dataAPI.buildModeEnabled = state
 end
 
-local function blockPageAction(blockInfo)
+local function blockPageAction(blockInfo, returnPage)
     if blockInfo.variants ~= nil then
-        if variantPages[blockInfo.name] == nil then
-            local variantPage = action_wheel:newPage(blockInfo.name)
+        if blockInfo.name == nil then
+            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'name'!")
+            return
+        end
+
+        if blockInfo.uniquePageID == nil then
+            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'uniquePageID'!")
+            return
+        end
+
+        if storedVariantPages[blockInfo.uniquePageID] == nil then
+            local variantPage = action_wheel:newPage(blockInfo.uniquePageID)
 
             variantPage:newAction()
                 :title("Back")
                 :item('minecraft:barrier')
-                :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
+                :onLeftClick(function() action_wheel:setPage(returnPage) end)
+                :onRightClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
-            for variantKey, variantValue in ipairs(blockInfo.variants) do
-                local action = variantPage:newAction()
-                    :item(variantValue.id)
-                    :title(variantValue.name)
-                    :onLeftClick(function() blockPageAction(variantValue) end)
-            end
-
-            variantPages[blockInfo.name] = variantPage
+            populatePageBlocks(variantPage, blockInfo.variants)
+            storedVariantPages[blockInfo.uniquePageID] = variantPage
         end
 
-        action_wheel:setPage(variantPages[blockInfo.name])
+        action_wheel:setPage(storedVariantPages[blockInfo.uniquePageID])
     else
         pings.applyBlock(blockInfo)
         action_wheel:setPage(actionWheelAPI.mainPage)
+        if blockInfo.name then
+            host:setActionbar(blockInfo.name)
+        end
+    end
+end
+
+function populatePageBlocks(page, blockInfo)
+    for key, value in ipairs(blockInfo) do
+        local action = page:newAction()
+            :title(value.name)
+            :onLeftClick(function() blockPageAction(value, page) end)
+
+        if value.blockID then
+            if isValidBlockID(value.blockID) then
+                action:item(value.blockID)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.blockID .. "§r` is not a valid block id!")
+            end
+
+        elseif value.variants and value.variants[1] and value.variants[1].blockID ~= nil then
+            if isValidBlockID(value.variants[1].blockID) then
+                action:item(value.variants[1].blockID)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.variaints[1].blockID .. "§r` is not a valid block id!")
+            end
+
+        end
+
+        if value.rightClick then
+            action:onRightClick(function() blockPageAction(value.rightClick, page) end)
+        end
+
+        if value.actionTexture then
+            local wheelTexture = textures[value.actionTexture]
+            if wheelTexture then
+                action:texture(wheelTexture)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.actionTexture .. "§r` is not a valid Blockbench texture!")
+            end
+        end
     end
 end
 
@@ -158,30 +209,24 @@ end
 
 function actionWheelAPI.generateBlockPage()
     local blockPage = action_wheel:newPage("Blocks")
-    
+
     blockPage:newAction()
         :title("Back")
         :item('minecraft:barrier')
         :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
-    for key, value in ipairs(blockInfos) do
-        local blockSelectAction = blockPage:newAction()
-            :title(value.name)
-            :onLeftClick(function() blockPageAction(value) end)
-
-        if value.variants == nil then
-            blockSelectAction:item(value.id)
-        else
-            blockSelectAction:item(value.variants[1].id)
-        end
-    end
+    populatePageBlocks(blockPage, blockInfos)
 
     actionWheelAPI.blockPage = blockPage
 end
 
-function actionWheelAPI.setSelectedBlock(title, id)
+function actionWheelAPI.setSelectedBlock(title, blockID)
     blockChangeAction:title(title)
-    blockChangeAction:item(id)
+    if isValidBlockID(blockID) then
+        blockChangeAction:item(blockID)
+    else
+        blockChangeAction:item()
+    end
 end
 
 return actionWheelAPI

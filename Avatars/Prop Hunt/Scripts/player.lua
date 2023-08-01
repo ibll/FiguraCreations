@@ -35,7 +35,7 @@ function playerAPI.applyModelPos()
 
         if snapApplied == false then
             sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.25, 2, false)
-            
+
             local blockPos
             if dataAPI.snapMode == "Floored" then
                 blockPos = vec(math.floor(pos.x)*16 + 8, math.floor(pos.y)*16 + 0.001, math.floor(pos.z)*16 + 8)
@@ -45,11 +45,21 @@ function playerAPI.applyModelPos()
             models.model:setPos(blockPos)
 
             local blockRot
-            if dataAPI.selectedBlockInfo.rotate then
+            if dataAPI.selectedBlockInfo.rotate == "Any" then
                 blockRot = math.round(player:getRot().y/90) * 90
+                if blockRot % 180 == 0 then blockRot = blockRot + 180 end
+
+            elseif dataAPI.selectedBlockInfo.rotate == "Limited" then
+                blockRot = math.abs(math.round(player:getRot().y/90) * 90)
+                if blockRot % 360 == 0 then
+                    blockRot = blockRot + 180
+                elseif (blockRot + 90) % 360 == 0 then
+                    blockRot = blockRot + 180
+                end
+
             end
             models.model:setRot(0, blockRot, 0)
-            
+
             snapApplied = true
         end
     else
@@ -62,29 +72,78 @@ function playerAPI.applyModelPos()
     savedPosition = currentPosition
 end
 
-function playerAPI.applyBlock(blockInfo, noResnap)
+function pings.applyBlock(blockInfo, unsnap)
+
+    if blockInfo.name == nil then
+        print("§4Error!\n§cInvalid Block Info!§r\nSelected block has no 'name'.")
+        return
+    end
+
+    if blockInfo.bone and models.model.root[blockInfo.bone] == nil then
+        print("§4Error!\n§cInvalid Block Info!\n", blockInfo, "bone \"" .. blockInfo.bone .. "\" is not valid!")
+        return
+    end
+
+    if (blockInfo.texture == nil) == (blockInfo.textures == nil) then
+        if blockInfo.bone then
+            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have either 'texture' or 'textures' when 'bone' is defined.")
+            return
+        end
+    end
+
+    if (blockInfo.texture or blockInfo.textures) and blockInfo.bone == nil then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have a 'bone' when either 'texture' or 'textures' are defined.")
+        return
+    end
+
+    if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited") then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", or nil.")
+        return
+    end
+
+    if models.model.root[blockInfo.bone] and blockInfo.textures ~= nil then
+        for index, value in pairs(blockInfo.textures) do
+            if models.model.root[blockInfo.bone][index] == nil then
+                print("§4Error!\n§cInvalid Block Info!§r\n§b" .. index .. "§r is not a bone in §b" .. blockInfo.bone .. "§r! Check", blockInfo.textures)
+                return
+            end
+        end
+    end
+
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
-    if noResnap ~= true then playerAPI.ticksInSameBlock = 0 end
-    playerAPI.applyModelPos()
+    if unsnap ~= false then
+        playerAPI.ticksInSameBlock = 0
+        playerAPI.applyModelPos()
+    end
 
     for index, value in ipairs(models.model.root:getChildren()) do
         value:setVisible(false)
     end
-    models.model.root[blockInfo.bone]:setVisible(true)
 
-    if blockInfo.texture ~= nil then
-        for index, value in ipairs(models.model.root[blockInfo.bone]:getChildren()) do
-            value:setPrimaryTexture("RESOURCE", blockInfo.texture)
+    if models.model.root[blockInfo.bone] then
+        models.model.root[blockInfo.bone]:setVisible(true)
+
+        if blockInfo.texture ~= nil then
+            for index, value in ipairs(models.model.root[blockInfo.bone]:getChildren()) do
+                value:setPrimaryTexture("RESOURCE", blockInfo.texture)
+            end
+
+        elseif blockInfo.textures ~= nil then
+            for index, value in pairs(blockInfo.textures) do
+                models.model.root[blockInfo.bone][index]:setPrimaryTexture("RESOURCE", value)
+            end
+
         end
-    elseif blockInfo.textures ~= nil then
-        for index, value in pairs(blockInfo.textures) do
-            models.model.root[blockInfo.bone][index]:setPrimaryTexture("RESOURCE", value)
-        end
+
     end
 
-    actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.id)
+    actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.blockID)
 
     dataAPI.selectedBlockInfo = blockInfo
+end
+
+function playerAPI.applyBlock(blockInfo, unsnap)
+    pings.applyBlock(blockInfo, unsnap)
 end
 
 function playerAPI.setVisibleAsProp(state)
