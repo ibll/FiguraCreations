@@ -10,6 +10,11 @@ local playerAPI = {}
 
 playerAPI.ticksInSameBlock = 0
 
+local function isValidBlockID(id)
+    local function tryId(inputID) return world.newItem(inputID) end
+    return pcall(tryId, id)
+end
+
 ---------
 -- API --
 ---------
@@ -58,14 +63,14 @@ function playerAPI.applyModelPos()
                 end
 
             end
-            models.model:setRot(0, blockRot, 0)
+            models.model.root:setRot(0, blockRot, 0)
 
             snapApplied = true
         end
     else
         models.model:setParentType("None")
         models.model:setPos(0, 0, 0)
-        models.model:setRot(0, 0, 0)
+        models.model.root:setRot(0, 0, 0)
         snapApplied = false
     end
 
@@ -79,20 +84,8 @@ function pings.applyBlock(blockInfo, unsnap)
         return
     end
 
-    if blockInfo.bone and models.model.root[blockInfo.bone] == nil then
-        print("§4Error!\n§cInvalid Block Info!\n", blockInfo, "bone \"" .. blockInfo.bone .. "\" is not valid!")
-        return
-    end
-
-    if (blockInfo.texture == nil) == (blockInfo.textures == nil) then
-        if blockInfo.bone then
-            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have either 'texture' or 'textures' when 'bone' is defined.")
-            return
-        end
-    end
-
-    if (blockInfo.texture or blockInfo.textures) and blockInfo.bone == nil then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "must have a 'bone' when either 'texture' or 'textures' are defined.")
+    if isValidBlockID(blockInfo.blockID) == false then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, blockInfo.blockID, "is not a valid block ID!")
         return
     end
 
@@ -101,41 +94,19 @@ function pings.applyBlock(blockInfo, unsnap)
         return
     end
 
-    if models.model.root[blockInfo.bone] and blockInfo.textures ~= nil then
-        for index, value in pairs(blockInfo.textures) do
-            if models.model.root[blockInfo.bone][index] == nil then
-                print("§4Error!\n§cInvalid Block Info!§r\n§b" .. index .. "§r is not a bone in §b" .. blockInfo.bone .. "§r! Check", blockInfo.textures)
-                return
-            end
-        end
-    end
-
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then
         playerAPI.ticksInSameBlock = 0
         playerAPI.applyModelPos()
     end
 
-    for index, value in ipairs(models.model.root:getChildren()) do
-        value:setVisible(false)
+    for index, value in pairs(models.model.root:getTask()) do
+        value:remove()
     end
 
-    if models.model.root[blockInfo.bone] then
-        models.model.root[blockInfo.bone]:setVisible(true)
-
-        if blockInfo.texture ~= nil then
-            for index, value in ipairs(models.model.root[blockInfo.bone]:getChildren()) do
-                value:setPrimaryTexture("RESOURCE", blockInfo.texture)
-            end
-
-        elseif blockInfo.textures ~= nil then
-            for index, value in pairs(blockInfo.textures) do
-                models.model.root[blockInfo.bone][index]:setPrimaryTexture("RESOURCE", value)
-            end
-
-        end
-
-    end
+    models.model.root:newBlock(blockInfo.name)
+        :setBlock(blockInfo.blockID)
+        :setPos(-8, 0, -8)
 
     actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.blockID)
 

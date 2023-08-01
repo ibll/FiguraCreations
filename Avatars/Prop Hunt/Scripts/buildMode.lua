@@ -7,10 +7,10 @@ local buildModeAPI = {}
 -------------------
 
 function pings.place(pos)
-    local copy = models.model.root:copy("PlacedBlock")
-    models.model.World:addChild(copy)
-    copy:setVisible(true)
-    copy:setPos(pos)
+    models.model.World:newPart("PlaceForBlock"):newBlock("PlacedBlock")
+        :setBlock(dataAPI.selectedBlockInfo.blockID)
+        :setVisible(true)
+        :setPos(pos)
 end
 
 function buildModeAPI.place(pos)
@@ -26,7 +26,7 @@ function buildModeAPI.click()
     if targetedBlock:getID() == "minecraft:air" then return end
 
     local pos = targetedBlock:getPos()*16
-    pos = vec(pos.x+8, pos.y + 0.01, pos.z+8)
+    pos = vec(pos.x, pos.y + 0.01, pos.z)
 
     local positionOffsetVectors = {
         up = vec(0, 16, 0),
