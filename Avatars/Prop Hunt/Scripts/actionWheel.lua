@@ -148,7 +148,6 @@ function populatePageBlocks(page, blockInfo)
         end
 
         if value.rightClick then
-            print(value.rightClick)
             action:onRightClick(function() blockPageAction(value.rightClick, page) end)
         end
 
