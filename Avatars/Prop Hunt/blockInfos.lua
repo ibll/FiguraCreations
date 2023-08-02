@@ -10,7 +10,7 @@ local blockInfos = {
             },
             {
                 name = "Sand",
-                blockID = "minecraft:sandy",
+                blockID = "minecraft:sand",
             },
             {
                 name = "Stone",
