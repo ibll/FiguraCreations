@@ -28,6 +28,11 @@ jobs:
         uses: EndBug/latest-tag@latest
         with:
           ref: 'Avatar-Downloads'
+      - name: Delete Releases
+        uses: sgpublic/delete-release-action@v1.0
+        with:
+          release-drop: true
+          release-keep-count: -1
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
