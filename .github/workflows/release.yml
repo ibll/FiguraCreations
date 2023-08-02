@@ -28,6 +28,12 @@ jobs:
         uses: EndBug/latest-tag@latest
         with:
           ref: 'Avatar-Downloads'
+      - name: Delete Release
+        uses: dev-drprasad/delete-older-releases@v0.2.1
+        with:
+          keep_latest: 0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
@@ -36,4 +42,3 @@ jobs:
           artifacts: '.github/outputs/**.zip'
           removeArtifacts: true
           replacesArtifacts: true
-          allowUpdates: true
