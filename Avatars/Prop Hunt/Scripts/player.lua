@@ -49,7 +49,7 @@ function playerAPI.applyModelPos()
             end
             models.model:setPos(blockPos)
 
-            local blockRot
+            local blockRot = 0
             if dataAPI.selectedBlockInfo.rotate == "Any" then
                 blockRot = math.round(player:getRot().y/90) * 90
                 if blockRot % 180 == 0 then blockRot = blockRot + 180 end
@@ -70,7 +70,12 @@ function playerAPI.applyModelPos()
                     blockRot = blockRot + 180
                 end
             end
-            models.model.root:setRot(0, blockRot, 0)
+
+            local offsetRot = 0
+            if dataAPI.selectedBlockInfo.offsetRot then
+                offsetRot = dataAPI.selectedBlockInfo.offsetRot
+            end
+            models.model.root:setRot(0, blockRot + offsetRot, 0)
 
             snapApplied = true
         end
@@ -87,17 +92,17 @@ end
 function pings.applyBlock(blockInfo, unsnap)
 
     if blockInfo.name == nil then
-        print("§4Error!\n§cInvalid Block Info!§r\nSelected block has no 'name'.")
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §rhas no 'name'!")
         return
     end
 
     if isValidBlockID(blockInfo.blockID) == false then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, blockInfo.blockID, "is not a valid block ID!")
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §b" .. blockInfo.blockID .. "§r is not a valid 'blockID'!")
         return
     end
 
     if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited" and blockInfo.rotate ~= "LimitedFlipWE") then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "'rotate' must be \"Any\", \"Limited\", \"LimitedFlipWE\" or nil.")
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; 'rotate' must be \"Any\", \"Limited\", \"LimitedFlipWE\" or nil.")
         return
     end
 

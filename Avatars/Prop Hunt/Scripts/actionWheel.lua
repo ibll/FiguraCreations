@@ -135,14 +135,14 @@ function populatePageBlocks(page, blockInfo)
             if isValidBlockID(value.blockID) then
                 action:item(value.blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.blockID .. "§r` is not a valid block id!")
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid 'blockID'!")
             end
 
         elseif value.variants and value.variants[1] and value.variants[1].blockID ~= nil then
             if isValidBlockID(value.variants[1].blockID) then
                 action:item(value.variants[1].blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.variaints[1].blockID .. "§r` is not a valid block id!")
+                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].blockID .. "§r is not a valid 'blockID'!")
             end
 
         end
@@ -156,7 +156,7 @@ function populatePageBlocks(page, blockInfo)
             if wheelTexture then
                 action:texture(wheelTexture)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n`§b" .. value.actionTexture .. "§r` is not a valid Blockbench texture!")
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.actionTexture .. "§r is not a valid Blockbench texture!")
             end
         end
     end

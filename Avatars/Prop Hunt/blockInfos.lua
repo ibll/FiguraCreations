@@ -295,6 +295,7 @@ local blockInfos = {
                         name = "Pink Glazed Terracotta",
                         blockID = "minecraft:pink_glazed_terracotta",
                         rotate = "Any",
+                        offsetRot = 180,
                     }
                 }
             },
