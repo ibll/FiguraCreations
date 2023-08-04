@@ -19,7 +19,7 @@ end
 -- API --
 ---------
 
-function playerAPI.applyModelPos() 
+function playerAPI.applyModelPos()
     local pos = player:getPos()
     local currentPosition
 
@@ -38,6 +38,11 @@ function playerAPI.applyModelPos()
     if playerAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
 
+        local offsetRot = 0
+        if dataAPI.selectedBlockInfo.offsetRot then
+            offsetRot = dataAPI.selectedBlockInfo.offsetRot
+        end
+
         if snapApplied == false then
             sounds:playSound("minecraft:ui.button.click", player:getPos(), 0.25, 2, false)
 
@@ -50,6 +55,7 @@ function playerAPI.applyModelPos()
             models.model:setPos(blockPos)
 
             local blockRot = 0
+
             if dataAPI.selectedBlockInfo.rotate == "Any" then
                 blockRot = math.round(player:getRot().y/90) * 90
                 if blockRot % 180 == 0 then blockRot = blockRot + 180 end
@@ -71,13 +77,13 @@ function playerAPI.applyModelPos()
                 end
             end
 
-            local offsetRot = 0
-            if dataAPI.selectedBlockInfo.offsetRot then
-                offsetRot = dataAPI.selectedBlockInfo.offsetRot
-            end
             models.model.root:setRot(0, blockRot + offsetRot, 0)
 
+            dataAPI.blockRot = blockRot
+
             snapApplied = true
+        else
+            models.model.root:setRot(0, dataAPI.blockRot + offsetRot, 0)
         end
     else
         models.model:setParentType("None")

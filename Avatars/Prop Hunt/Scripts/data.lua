@@ -8,7 +8,7 @@ local dataAPI = {}
 dataAPI.snapMode = "Rounded"
 dataAPI.seekerEnabled = false
 dataAPI.selectedBlockInfo = defaultBlockInfo
-dataAPI.blockRot = nil
+dataAPI.blockRot = 0
 -- unsynced
 dataAPI.buildModeEnabled = false
 
@@ -22,6 +22,7 @@ function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.snapMode = snapState
     dataAPI.seekerEnabled = seekerState
     dataAPI.selectedBlockInfo = selectedBlockState
+    dataAPI.blockRot = blockRotState
 end
 
 -------------------
@@ -30,12 +31,12 @@ end
 
 function dataAPI.quickSync()
     if not host:isHost() then return end
-    pings.sync(dataAPI.snapMode, dataAPI.seekerEnabled, dataAPI.selectedBlockInfo, currentRot)
+    pings.sync(dataAPI.snapMode, dataAPI.seekerEnabled, dataAPI.selectedBlockInfo, dataAPI.blockRot)
 end
 
 function dataAPI.lazySync()
     syncTick = syncTick + 1
-    if syncTick < 200 then return end
+    if syncTick < 100 then return end
     dataAPI.quickSync()
     syncTick = 0
 end

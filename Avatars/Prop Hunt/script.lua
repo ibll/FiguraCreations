@@ -21,6 +21,7 @@ end
 function events.tick()
     dataAPI.lazySync()
     playerAPI.tick()
+    playerAPI.applyBlock(dataAPI.selectedBlockInfo, false)
 end
 
 local placeKeybind = keybinds:fromVanilla("key.use")
