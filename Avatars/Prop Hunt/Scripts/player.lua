@@ -89,7 +89,7 @@ function playerAPI.applyModelPos()
     savedPosition = currentPosition
 end
 
-function pings.applyBlock(blockInfo, unsnap)
+function playerAPI.applyBlock(blockInfo, unsnap)
 
     if blockInfo.name == nil then
         print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §rhas no 'name'!")
@@ -125,8 +125,8 @@ function pings.applyBlock(blockInfo, unsnap)
     dataAPI.selectedBlockInfo = blockInfo
 end
 
-function playerAPI.applyBlock(blockInfo, unsnap)
-    pings.applyBlock(blockInfo, unsnap)
+function pings.applyBlock(blockInfo, unsnap)
+    playerAPI.applyBlock(blockInfo, unsnap)
 end
 
 function playerAPI.setVisibleAsProp(state)
