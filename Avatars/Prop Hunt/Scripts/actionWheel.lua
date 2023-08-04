@@ -131,18 +131,31 @@ function populatePageBlocks(page, blockInfo)
             :title(value.name)
             :onLeftClick(function() blockPageAction(value, page) end)
 
-        if value.blockID then
+        if value.iconID then
+            if isValidBlockID(value.iconID) then
+                action:item(value.iconID)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.iconID .. "§r is not a valid item ID!")
+            end
+        elseif value.blockID then
             if isValidBlockID(value.blockID) then
                 action:item(value.blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid 'blockID'!")
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid item ID!")
+            end
+            
+        elseif value.variants and value.variants[1] and value.variants[1].iconID ~= nil then
+            if isValidBlockID(value.variants[1].iconID) then
+                action:item(value.variants[1].iconID)
+            else
+                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].iconID .. "§r is not a valid item ID!")
             end
 
         elseif value.variants and value.variants[1] and value.variants[1].blockID ~= nil then
             if isValidBlockID(value.variants[1].blockID) then
                 action:item(value.variants[1].blockID)
             else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].blockID .. "§r is not a valid 'blockID'!")
+                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].blockID .. "§r is not a valid item ID!")
             end
 
         end

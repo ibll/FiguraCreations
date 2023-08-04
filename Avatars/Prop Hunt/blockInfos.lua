@@ -1,7 +1,36 @@
+-- blockInfos must be a table of
+-- multiple blockInfo tables
+
+-- while the line is fuzzy between them, these
+-- are generally either groups or blocks
+
+-- a group might look like this:
+-- {
+--     name* = String | The name of the group when hovered over in the action Wheel
+--     uniquePageID* = String | The unique identifier for indexing the page. Duplicates will cause problems
+--     variants* = Table of blockInfo tables (either groups or blocks) | Items to appear in the page when expanded
+--     iconID = String | The minecraft item ID to appear in the action wheel. Fallbacks for this include a blockID or the first item in the variants key
+--     rightClick = blockInfo table (either a group or block) | Alternate block or group to use, especially for alternate forms of blocks
+-- }
+
+-- a block might look like this:
+-- {
+--     name* = String | The name of the block when hovered over in the action wheel
+--     blockID* = String | The minecraft block ID to set the player to
+--     iconID = String | The minecraft item ID to appear in the action wheel
+--     actionTexture = String | A registered texture to put on the action in the action wheel
+--     rotate = "Any", "Limited", "LimitedFlipWE" | How the block should lock when snapping in place
+--     offsetRot = Number | Degrees to turn the block at all times
+--     rightClick = blockInfo table (either a group or block) | Alternate block or group to use, especially for alternate forms of blocks
+-- }
+
+-- Remember, groups can be within groups within rightClick's within groups and so on!
+
+
 local blockInfos = {
     {
         name = "Natural",
-        blockID = "minecraft:stone",
+        iconID = "minecraft:stone",
         uniquePageID = "natural",
         variants = {
             {
@@ -70,7 +99,7 @@ local blockInfos = {
     {
         name = "Colors",
         uniquePageID = "colors",
-        blockID = "minecraft:pink_concrete",
+        iconID = "minecraft:pink_concrete",
         variants = {
             {
                 name = "Wool",

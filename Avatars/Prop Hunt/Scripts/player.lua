@@ -11,7 +11,7 @@ local playerAPI = {}
 playerAPI.ticksInSameBlock = 0
 
 local function isValidBlockID(id)
-    local function tryId(inputID) return world.newItem(inputID) end
+    local function tryId(inputID) return world.newBlock(inputID) end
     return pcall(tryId, id)
 end
 
@@ -103,7 +103,11 @@ function playerAPI.applyBlock(blockInfo, unsnap)
     end
 
     if isValidBlockID(blockInfo.blockID) == false then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §b" .. blockInfo.blockID .. "§r is not a valid 'blockID'!")
+        if blockInfo.blockID then
+            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §b" .. blockInfo.blockID .. "§r is not a valid block ID!")
+        else
+            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; No 'blockID'!")
+        end
         return
     end
 
