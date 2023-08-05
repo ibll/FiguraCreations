@@ -143,7 +143,7 @@ function populatePageBlocks(page, blockInfo)
             else
                 print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid item ID!")
             end
-            
+
         elseif value.variants and value.variants[1] and value.variants[1].iconID ~= nil then
             if isValidBlockID(value.variants[1].iconID) then
                 action:item(value.variants[1].iconID)

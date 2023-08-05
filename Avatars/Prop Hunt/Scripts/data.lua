@@ -19,6 +19,11 @@ if storedSnapMode ~= nil then
     dataAPI.snapMode = storedSnapMode
 end
 
+local storedBlockInfo = config:load("BlockInfo")
+if storedBlockInfo ~= nil then
+    dataAPI.selectedBlockInfo = storedBlockInfo
+end
+
 function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.snapMode = snapState
     dataAPI.seekerEnabled = seekerState

@@ -26,7 +26,6 @@
 
 -- Remember, groups can be within groups within rightClick's within groups and so on!
 
-
 local blockInfos = {
     {
         name = "Natural",

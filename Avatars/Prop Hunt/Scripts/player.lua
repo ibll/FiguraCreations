@@ -83,7 +83,7 @@ function playerAPI.applyModelPos()
     else
         models.model:setParentType("None")
         models.model:setPos(0, 0, 0)
-        models.model.root:setRot(0, 0, 0)
+        models.model.root:setRot(0, dataAPI.selectedBlockInfo.offsetRot, 0)
         snapApplied = false
     end
 
@@ -102,6 +102,7 @@ function playerAPI.setBlock(blockInfo, unsnap)
     actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.blockID)
 
     dataAPI.selectedBlockInfo = blockInfo
+    config:save("BlockInfo", dataAPI.selectedBlockInfo)
 end
 
 function pings.setBlock(blockInfo, unsnap)

@@ -13,6 +13,7 @@ function events.entity_init()
     actionWheelAPI.generateMainPage()
     actionWheelAPI.generateBlockPage()
     action_wheel:setPage(actionWheelAPI.mainPage)
+    actionWheelAPI.setSelectedBlock(dataAPI.selectedBlockInfo.name, dataAPI.selectedBlockInfo.blockID)
 
     playerAPI.setVisibleAsProp(true)
     applyBlock(dataAPI.selectedBlockInfo)
