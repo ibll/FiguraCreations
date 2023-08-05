@@ -2,6 +2,8 @@ local dataAPI = require("Scripts.data")
 local applyBlock = require("Scripts.applyBlock")
 local actionWheelAPI = require("Scripts.actionWheel")
 
+local settings = require("settings")
+
 local savedPosition
 local snapApplied
 local seekerApplied = false
@@ -28,7 +30,7 @@ function playerAPI.applyModelPos()
         dataAPI.ticksInSameBlock = 0
     end
 
-    if dataAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
+    if dataAPI.ticksInSameBlock >= settings.SECONDS_TO_RESNAP * 20 and dataAPI.snapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
 
         local offsetRot = 0

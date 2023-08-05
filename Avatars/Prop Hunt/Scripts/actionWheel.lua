@@ -1,5 +1,5 @@
 local dataAPI = require("Scripts.data")
-local blockInfos = require("blockInfos")
+local settings = require("settings")
 
 local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
 local ENABLED_COLOR_HOVER = vectors.hexToRGB("#4Af43A")
@@ -39,7 +39,7 @@ end
 local function toggleSeeker(state)
     dataAPI.seekerEnabled = not state
     dataAPI.quickSync()
-    printState("Prop Mode", not state)
+    printState("Prop Mode", state)
 
     if state then
         seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
@@ -233,7 +233,7 @@ function actionWheelAPI.generateBlockPage()
         :item('minecraft:barrier')
         :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
-    populatePageBlocks(blockPage, blockInfos)
+    populatePageBlocks(blockPage, settings.BLOCKS)
 
     actionWheelAPI.blockPage = blockPage
 end

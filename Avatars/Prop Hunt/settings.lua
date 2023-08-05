@@ -1,4 +1,8 @@
--- blockInfos must be a table of
+local settings = {}
+
+settings.SECONDS_TO_RESNAP = 1
+
+-- BLOCKS must be a table of
 -- multiple blockInfo tables
 
 -- while the line is fuzzy between them, these
@@ -26,7 +30,7 @@
 
 -- Remember, groups can be within groups within rightClick's within groups and so on!
 
-local blockInfos = {
+settings.BLOCKS = {
     {
         name = "Natural",
         iconID = "minecraft:stone",
@@ -346,6 +350,6 @@ local blockInfos = {
     },
 }
 
-local defaultBlockInfo = blockInfos[1].variants[1]
+settings.DEFAULT_BLOCK = settings.BLOCKS[1].variants[1]
 
-return blockInfos, defaultBlockInfo
+return settings

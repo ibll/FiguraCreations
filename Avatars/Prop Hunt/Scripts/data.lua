@@ -1,4 +1,4 @@
-local blockInfos, defaultBlockInfo = require("blockInfos")
+local settings = require("settings")
 local applyBlock = require("Scripts.applyBlock")
 
 local syncTick = 0
@@ -8,7 +8,7 @@ local dataAPI = {}
 --synced
 dataAPI.snapMode = "Rounded"
 dataAPI.seekerEnabled = false
-dataAPI.selectedBlockInfo = defaultBlockInfo
+dataAPI.selectedBlockInfo = settings.DEFAULT_BLOCK
 dataAPI.blockRot = 0
 -- unsynced
 dataAPI.buildModeEnabled = false
