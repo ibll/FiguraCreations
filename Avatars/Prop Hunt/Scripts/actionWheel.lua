@@ -117,7 +117,7 @@ local function blockPageAction(blockInfo, returnPage)
 
         action_wheel:setPage(storedVariantPages[blockInfo.uniquePageID])
     else
-        pings.applyBlock(blockInfo)
+        pings.setBlock(blockInfo)
         action_wheel:setPage(actionWheelAPI.mainPage)
         if blockInfo.name then
             host:setActionbar(blockInfo.name)

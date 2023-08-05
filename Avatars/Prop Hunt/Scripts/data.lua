@@ -1,4 +1,5 @@
 local blockInfos, defaultBlockInfo = require("blockInfos")
+local applyBlock = require("Scripts.applyBlock")
 
 local syncTick = 0
 
@@ -23,6 +24,8 @@ function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.seekerEnabled = seekerState
     dataAPI.selectedBlockInfo = selectedBlockState
     dataAPI.blockRot = blockRotState
+
+    applyBlock(dataAPI.selectedBlockInfo)
 end
 
 -------------------
