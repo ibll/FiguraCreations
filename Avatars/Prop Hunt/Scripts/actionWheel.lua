@@ -1,5 +1,5 @@
 local dataAPI = require("Scripts.data")
-local blockInfos = require("blockInfos")
+local settings = require("settings")
 
 local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
 local ENABLED_COLOR_HOVER = vectors.hexToRGB("#4Af43A")
@@ -39,13 +39,18 @@ end
 local function toggleSeeker(state)
     dataAPI.seekerEnabled = not state
     dataAPI.quickSync()
-    printState("Prop Mode", not state)
+    printState("Prop Mode", state)
 
     if state then
         seekerToggleAction:hoverColor(ENABLED_COLOR_HOVER)
     else
         seekerToggleAction:hoverColor(DISABLED_COLOR_HOVER)
     end
+end
+
+function pings.setSnapMode(snapState)
+    dataAPI.ticksInSameBlock = 0
+    dataAPI.snapMode = snapState
 end
 
 local function applySnapModeActionStyle()
@@ -75,13 +80,13 @@ local function cycleSnapMode()
         dataAPI.snapMode = "Floored"
     elseif dataAPI.snapMode == "Floored" then
         dataAPI.snapMode = "Disabled"
-    else 
+    else
         dataAPI.snapMode = "Rounded"
     end
     applySnapModeActionStyle()
 
+    pings.setSnapMode(dataAPI.snapMode)
     config:save("SnapMode", dataAPI.snapMode)
-    dataAPI.quickSync()
     printState("Snapping",  dataAPI.snapMode)
 end
 
@@ -117,7 +122,7 @@ local function blockPageAction(blockInfo, returnPage)
 
         action_wheel:setPage(storedVariantPages[blockInfo.uniquePageID])
     else
-        pings.applyBlock(blockInfo)
+        pings.setBlock(blockInfo)
         action_wheel:setPage(actionWheelAPI.mainPage)
         if blockInfo.name then
             host:setActionbar(blockInfo.name)
@@ -143,7 +148,7 @@ function populatePageBlocks(page, blockInfo)
             else
                 print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid item ID!")
             end
-            
+
         elseif value.variants and value.variants[1] and value.variants[1].iconID ~= nil then
             if isValidBlockID(value.variants[1].iconID) then
                 action:item(value.variants[1].iconID)
@@ -228,7 +233,7 @@ function actionWheelAPI.generateBlockPage()
         :item('minecraft:barrier')
         :onLeftClick(function() action_wheel:setPage(actionWheelAPI.mainPage) end)
 
-    populatePageBlocks(blockPage, blockInfos)
+    populatePageBlocks(blockPage, settings.BLOCKS)
 
     actionWheelAPI.blockPage = blockPage
 end

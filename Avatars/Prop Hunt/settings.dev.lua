@@ -1,4 +1,8 @@
-local blockInfos = {
+local settings = {}
+
+settings.SECONDS_TO_RESNAP = 1
+
+settings.BLOCKS = {
     {
         name = "Rotations",
         uniquePageID = "rotations",
@@ -48,6 +52,6 @@ local blockInfos = {
     }
 }
 
-local defaultBlockInfo = blockInfos[1].variants[1]
+settings.DEFAULT_BLOCK = settings.BLOCKS[1].variants[1]
 
-return blockInfos, defaultBlockInfo
+return settings

@@ -1,19 +1,14 @@
 local dataAPI = require("Scripts.data")
+local applyBlock = require("Scripts.applyBlock")
 local actionWheelAPI = require("Scripts.actionWheel")
+
+local settings = require("settings")
 
 local savedPosition
 local snapApplied
-
 local seekerApplied = false
 
 local playerAPI = {}
-
-playerAPI.ticksInSameBlock = 0
-
-local function isValidBlockID(id)
-    local function tryId(inputID) return world.newBlock(inputID) end
-    return pcall(tryId, id)
-end
 
 ---------
 -- API --
@@ -30,12 +25,12 @@ function playerAPI.applyModelPos()
     end
 
     if savedPosition == currentPosition then
-        playerAPI.ticksInSameBlock = playerAPI.ticksInSameBlock + 1
+        dataAPI.ticksInSameBlock = dataAPI.ticksInSameBlock + 1
     else
-        playerAPI.ticksInSameBlock = 0
+        dataAPI.ticksInSameBlock = 0
     end
 
-    if playerAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
+    if dataAPI.ticksInSameBlock >= settings.SECONDS_TO_RESNAP * 20 and dataAPI.snapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
 
         local offsetRot = 0
@@ -88,55 +83,30 @@ function playerAPI.applyModelPos()
     else
         models.model:setParentType("None")
         models.model:setPos(0, 0, 0)
-        models.model.root:setRot(0, 0, 0)
+        models.model.root:setRot(0, dataAPI.selectedBlockInfo.offsetRot, 0)
         snapApplied = false
     end
 
     savedPosition = currentPosition
 end
 
-function playerAPI.applyBlock(blockInfo, unsnap)
-
-    if blockInfo.name == nil then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §rhas no 'name'!")
-        return
-    end
-
-    if isValidBlockID(blockInfo.blockID) == false then
-        if blockInfo.blockID then
-            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §b" .. blockInfo.blockID .. "§r is not a valid block ID!")
-        else
-            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; No 'blockID'!")
-        end
-        return
-    end
-
-    if (blockInfo.rotate) and (blockInfo.rotate ~= "Any" and blockInfo.rotate ~= "Limited" and blockInfo.rotate ~= "LimitedFlipWE") then
-        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; 'rotate' must be \"Any\", \"Limited\", \"LimitedFlipWE\" or nil.")
-        return
-    end
+function playerAPI.setBlock(blockInfo, unsnap)
+    applyBlock(blockInfo)
 
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then
-        playerAPI.ticksInSameBlock = 0
+        dataAPI.ticksInSameBlock = 0
         playerAPI.applyModelPos()
     end
-
-    for index, value in pairs(models.model.root:getTask()) do
-        value:remove()
-    end
-
-    models.model.root:newBlock(blockInfo.name)
-        :setBlock(blockInfo.blockID)
-        :setPos(-8, 0, -8)
 
     actionWheelAPI.setSelectedBlock(blockInfo.name, blockInfo.blockID)
 
     dataAPI.selectedBlockInfo = blockInfo
+    config:save("BlockInfo", dataAPI.selectedBlockInfo)
 end
 
-function pings.applyBlock(blockInfo, unsnap)
-    playerAPI.applyBlock(blockInfo, unsnap)
+function pings.setBlock(blockInfo, unsnap)
+    playerAPI.setBlock(blockInfo, unsnap)
 end
 
 function playerAPI.setVisibleAsProp(state)
@@ -146,8 +116,9 @@ function playerAPI.setVisibleAsProp(state)
     nameplate.ENTITY:setVisible(not state)
     models.model.root:setVisible(state)
 
-    if state == true then ShadowSize = 0 else ShadowSize = 0.5 end
-    renderer:setShadowRadius(ShadowSize)
+    local shadowSize = 0.5
+    if state == true then shadowSize = 0 end
+    renderer:setShadowRadius(shadowSize)
 end
 
 function playerAPI.tick()

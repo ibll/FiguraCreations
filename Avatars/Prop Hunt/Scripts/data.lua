@@ -1,4 +1,5 @@
-local blockInfos, defaultBlockInfo = require("blockInfos")
+local settings = require("settings")
+local applyBlock = require("Scripts.applyBlock")
 
 local syncTick = 0
 
@@ -7,10 +8,11 @@ local dataAPI = {}
 --synced
 dataAPI.snapMode = "Rounded"
 dataAPI.seekerEnabled = false
-dataAPI.selectedBlockInfo = defaultBlockInfo
+dataAPI.selectedBlockInfo = settings.DEFAULT_BLOCK
 dataAPI.blockRot = 0
 -- unsynced
 dataAPI.buildModeEnabled = false
+dataAPI.ticksInSameBlock = 0
 
 -- data loading
 local storedSnapMode = config:load("SnapMode")
@@ -18,11 +20,18 @@ if storedSnapMode ~= nil then
     dataAPI.snapMode = storedSnapMode
 end
 
+local storedBlockInfo = config:load("BlockInfo")
+if storedBlockInfo ~= nil then
+    dataAPI.selectedBlockInfo = storedBlockInfo
+end
+
 function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.snapMode = snapState
     dataAPI.seekerEnabled = seekerState
     dataAPI.selectedBlockInfo = selectedBlockState
     dataAPI.blockRot = blockRotState
+
+    applyBlock(dataAPI.selectedBlockInfo)
 end
 
 -------------------
