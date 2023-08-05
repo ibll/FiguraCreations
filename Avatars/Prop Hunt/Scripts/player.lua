@@ -8,8 +8,6 @@ local seekerApplied = false
 
 local playerAPI = {}
 
-playerAPI.ticksInSameBlock = 0
-
 ---------
 -- API --
 ---------
@@ -25,12 +23,12 @@ function playerAPI.applyModelPos()
     end
 
     if savedPosition == currentPosition then
-        playerAPI.ticksInSameBlock = playerAPI.ticksInSameBlock + 1
+        dataAPI.ticksInSameBlock = dataAPI.ticksInSameBlock + 1
     else
-        playerAPI.ticksInSameBlock = 0
+        dataAPI.ticksInSameBlock = 0
     end
 
-    if playerAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
+    if dataAPI.ticksInSameBlock >= 20 and dataAPI.snapMode ~= "Disabled" then
         models.model:setParentType("WORLD")
 
         local offsetRot = 0
@@ -95,7 +93,7 @@ function playerAPI.setBlock(blockInfo, unsnap)
 
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then
-        playerAPI.ticksInSameBlock = 0
+        dataAPI.ticksInSameBlock = 0
         playerAPI.applyModelPos()
     end
 

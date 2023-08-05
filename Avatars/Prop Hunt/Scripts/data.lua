@@ -12,6 +12,7 @@ dataAPI.selectedBlockInfo = defaultBlockInfo
 dataAPI.blockRot = 0
 -- unsynced
 dataAPI.buildModeEnabled = false
+dataAPI.ticksInSameBlock = 0
 
 -- data loading
 local storedSnapMode = config:load("SnapMode")

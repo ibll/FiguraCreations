@@ -48,6 +48,11 @@ local function toggleSeeker(state)
     end
 end
 
+function pings.setSnapMode(snapState)
+    dataAPI.ticksInSameBlock = 0
+    dataAPI.snapMode = snapState
+end
+
 local function applySnapModeActionStyle()
     if dataAPI.snapMode == "Floored" then
         snapModeAction
@@ -75,13 +80,13 @@ local function cycleSnapMode()
         dataAPI.snapMode = "Floored"
     elseif dataAPI.snapMode == "Floored" then
         dataAPI.snapMode = "Disabled"
-    else 
+    else
         dataAPI.snapMode = "Rounded"
     end
     applySnapModeActionStyle()
 
+    pings.setSnapMode(dataAPI.snapMode)
     config:save("SnapMode", dataAPI.snapMode)
-    dataAPI.quickSync()
     printState("Snapping",  dataAPI.snapMode)
 end
 
