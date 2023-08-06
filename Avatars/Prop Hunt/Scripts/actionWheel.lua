@@ -1,4 +1,5 @@
 local dataAPI = require("Scripts.data")
+local handleErrorsAPI = require("Scripts.handleErrors")
 local settings = require("settings")
 
 local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
@@ -97,15 +98,7 @@ end
 
 local function blockPageAction(blockInfo, returnPage)
     if blockInfo.variants ~= nil then
-        if blockInfo.name == nil then
-            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'name'!")
-            return
-        end
-
-        if blockInfo.uniquePageID == nil then
-            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'uniquePageID'!")
-            return
-        end
+        if handleErrorsAPI.blockPageActionWithGroups(blockInfo) == false then return false end
 
         if storedVariantPages[blockInfo.uniquePageID] == nil then
             local variantPage = action_wheel:newPage(blockInfo.uniquePageID)
@@ -131,7 +124,7 @@ local function blockPageAction(blockInfo, returnPage)
 end
 
 function populatePageBlocks(page, blockInfo)
-    for key, value in ipairs(blockInfo) do
+    for index, value in ipairs(blockInfo) do
         local action = page:newAction()
             :title(value.name)
             :onLeftClick(function() blockPageAction(value, page) end)
