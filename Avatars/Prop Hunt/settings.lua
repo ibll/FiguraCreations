@@ -130,17 +130,6 @@ settings.BLOCKS = {
                 }
             },
             {
-                name = "Haaha",
-                iconID = "minecraft:air",
-                blockID = "minecraft:gravel",
-                otherBlocks = {
-                    {
-                        offset = vec(0, 1),
-                        blockID = "minecraft:iron_door",
-                    },
-                }
-            },
-            {
                 name = "Hay Bale",
                 blockID = "minecraft:hay_block",
                 actionTexture = "Click",

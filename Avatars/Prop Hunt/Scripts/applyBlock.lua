@@ -38,6 +38,29 @@ local function applyBlock(blockInfo, hideWarnings)
         return false
     end
 
+    if type(blockInfo.otherBlocks) == "table" then
+        if #blockInfo.otherBlocks < 1
+        and outputWarnings
+        then
+            print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; §botherBlocks§r is empty!")
+            return false
+        end
+
+        for index, value in ipairs(blockInfo.otherBlocks) do
+
+            if type(value.offset) ~= "Vector3" then
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, ";", value.offset, "is not a valid Vector3!")
+                return false
+            end
+
+            if not isValidBlockID(value.blockID) then
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid block ID!")
+                return false
+            end
+
+        end
+    end
+
     if blockTask == nil then
         blockTask = models.model.root:newBlock("Block")
             :setPos(-8, 0, -8)
@@ -48,41 +71,21 @@ local function applyBlock(blockInfo, hideWarnings)
     end
 
     if type(blockInfo.otherBlocks) == "table" then
-        print(#blockInfo.otherBlocks)
-        if #blockInfo.otherBlocks < 1
-        and outputWarnings
-        then
-            print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; §botherBlocks§r is empty!")
-            return false
-        end
-
         for index, value in ipairs(blockInfo.otherBlocks) do
             local offset = value.offset
+            local otherBlockName = offset.x .. " " .. offset.y .. " " .. offset.z
 
-            if (type(offset.x) == "number") and (type(offset.y) == "number") and (type(offset.z) == "number") then
-                local otherBlockName = offset.x .. " " .. offset.y .. " " .. offset.z
-
-                if otherBlocks[otherBlockName] == nil then
-                    otherBlocks[otherBlockName] = models.model.root:newBlock(otherBlockName)
-                        :setPos(-8 + offset.x * 16, offset.y * 16, -8 + offset.z * 16)
-                end
-
-                if isValidBlockID(value.blockID) then
-                    otherBlocks[otherBlockName]:setBlock(value.blockID)
-                elseif outputWarnings then
-                    print("§6Warning!\n§eImproper Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid block ID!")
-                    return false
-                end
-            elseif outputWarnings then
-                print("§6Warning!\n§eImproper Block Info!§r\n", value, ";", value.offset, "is not a valid Vector3!")
-                return false
+            if otherBlocks[otherBlockName] == nil then
+                otherBlocks[otherBlockName] = models.model.root:newBlock(otherBlockName)
+                    :setPos(-8 + offset.x * 16, offset.y * 16, -8 + offset.z * 16)
             end
+
+            otherBlocks[otherBlockName]:setBlock(value.blockID)
         end
     end
 
     blockTask:setBlock(blockInfo.blockID)
     return true
-
 end
 
 return applyBlock
