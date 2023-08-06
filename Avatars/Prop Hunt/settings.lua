@@ -1,5 +1,7 @@
 local settings = {}
 
+settings.SUPPRESS_WARNINGS = false
+
 settings.SECONDS_TO_RESNAP = 1
 
 -- BLOCKS must be a table of
@@ -26,9 +28,16 @@ settings.SECONDS_TO_RESNAP = 1
 --     rotate = "Any", "Limited", "LimitedFlipWE" | How the block should lock when snapping in place
 --     offsetRot = Number | Degrees to turn the block at all times
 --     rightClick = blockInfo table (either a group or block) | Alternate block or group to use, especially for alternate forms of blocks
+--     otherBlocks = table of otherBlock tables | Blocks to place in addition to the blockID, like for doors.
+-- }
+-- Remember, groups can be within groups within rightClick's within groups and so on!
+
+-- otherBlocks are very simple for now, and the goal isn't really to allow turning into an entire house
+-- {
+--     offset* = Vector3 | Where to place the block
+--     blockID* = String | The minecraft block ID to place at the offset
 -- }
 
--- Remember, groups can be within groups within rightClick's within groups and so on!
 
 settings.BLOCKS = {
     {
@@ -86,6 +95,39 @@ settings.BLOCKS = {
                 name = "Anvil",
                 blockID = "minecraft:anvil",
                 rotate = "LimitedFlipWE",
+            },
+            {
+                name = "Oak Door",
+                blockID = "minecraft:oak_door",
+                rotate = "Any",
+                otherBlocks = {
+                    {
+                        offset = vec(0, 1, 0),
+                        blockID = "minecraft:oak_door[half=upper]",
+                    },
+                }
+            },
+            {
+                name = "Iron Door",
+                blockID = "minecraft:iron_door",
+                rotate = "Any",
+                otherBlocks = {
+                    {
+                        offset = vec(0, 1, 0),
+                        blockID = "minecraft:iron_door[half=upper]",
+                    },
+                },
+                rightClick = {
+                    name = "Iron Door (Flipped)",
+                    blockID = "minecraft:iron_door[hinge=right]",
+                    rotate = "Any",
+                    otherBlocks = {
+                        {
+                            offset = vec(0, 1, 0),
+                            blockID = "minecraft:iron_door[half=upper,hinge=right]",
+                        },
+                    }
+                }
             },
             {
                 name = "Hay Bale",

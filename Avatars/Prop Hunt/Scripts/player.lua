@@ -1,18 +1,29 @@
 local dataAPI = require("Scripts.data")
 local applyBlock = require("Scripts.applyBlock")
 local actionWheelAPI = require("Scripts.actionWheel")
-
 local settings = require("settings")
+
+local playerAPI = {}
+
+----------
+-- Vars --
+----------
 
 local savedPosition
 local snapApplied
 local seekerApplied = false
 
-local playerAPI = {}
+---------------
+-- Functions --
+---------------
 
----------
--- API --
----------
+function pings.setBlock(blockInfo, unsnap)
+    playerAPI.setBlock(blockInfo, unsnap)
+end
+
+-------------------
+-- API Functions --
+-------------------
 
 function playerAPI.applyModelPos()
     local pos = player:getPos()
@@ -91,7 +102,7 @@ function playerAPI.applyModelPos()
 end
 
 function playerAPI.setBlock(blockInfo, unsnap)
-    applyBlock(blockInfo)
+    if applyBlock(blockInfo) == false then return end
 
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then
@@ -103,10 +114,6 @@ function playerAPI.setBlock(blockInfo, unsnap)
 
     dataAPI.selectedBlockInfo = blockInfo
     config:save("BlockInfo", dataAPI.selectedBlockInfo)
-end
-
-function pings.setBlock(blockInfo, unsnap)
-    playerAPI.setBlock(blockInfo, unsnap)
 end
 
 function playerAPI.setVisibleAsProp(state)

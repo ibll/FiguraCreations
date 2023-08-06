@@ -1,5 +1,12 @@
 local dataAPI = require("Scripts.data")
+local handleErrorsAPI = require("Scripts.handleErrors")
 local settings = require("settings")
+
+local actionWheelAPI = {}
+
+----------
+-- Vars --
+----------
 
 local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
 local ENABLED_COLOR_HOVER = vectors.hexToRGB("#4Af43A")
@@ -11,8 +18,6 @@ local snapModeAction
 local blockChangeAction
 
 local storedVariantPages = {}
-
-local actionWheelAPI = {}
 
 local populatePageBlocks
 
@@ -97,15 +102,7 @@ end
 
 local function blockPageAction(blockInfo, returnPage)
     if blockInfo.variants ~= nil then
-        if blockInfo.name == nil then
-            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'name'!")
-            return
-        end
-
-        if blockInfo.uniquePageID == nil then
-            print("§4Error!\n§cInvalid Block Info!§r\n",  blockInfo, "must have a 'uniquePageID'!")
-            return
-        end
+        if handleErrorsAPI.blockPageActionWithGroups(blockInfo) == false then return false end
 
         if storedVariantPages[blockInfo.uniquePageID] == nil then
             local variantPage = action_wheel:newPage(blockInfo.uniquePageID)
@@ -131,36 +128,38 @@ local function blockPageAction(blockInfo, returnPage)
 end
 
 function populatePageBlocks(page, blockInfo)
-    for key, value in ipairs(blockInfo) do
+    for index, value in ipairs(blockInfo) do
         local action = page:newAction()
             :title(value.name)
             :onLeftClick(function() blockPageAction(value, page) end)
 
+        -- i actually hate this block i'm so sorry idk how to do better ;-;
         if value.iconID then
             if isValidBlockID(value.iconID) then
                 action:item(value.iconID)
-            else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.iconID .. "§r is not a valid item ID!")
+            elseif not settings.SUPPRESS_WARNINGS then
+                print("§6Warning!\n§eImproper Block Info!§r\n", value, "; §b" .. value.iconID .. "§r is not a valid item ID!")
             end
+
         elseif value.blockID then
             if isValidBlockID(value.blockID) then
                 action:item(value.blockID)
-            else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid item ID!")
+            elseif not settings.SUPPRESS_WARNINGS then
+                print("§6Warning!\n§eImproper Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid item ID!")
             end
 
         elseif value.variants and value.variants[1] and value.variants[1].iconID ~= nil then
             if isValidBlockID(value.variants[1].iconID) then
                 action:item(value.variants[1].iconID)
-            else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].iconID .. "§r is not a valid item ID!")
+            elseif not settings.SUPPRESS_WARNINGS then
+                print("§6Warning!\n§eImproper Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].iconID .. "§r is not a valid item ID!")
             end
 
         elseif value.variants and value.variants[1] and value.variants[1].blockID ~= nil then
             if isValidBlockID(value.variants[1].blockID) then
                 action:item(value.variants[1].blockID)
-            else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].blockID .. "§r is not a valid item ID!")
+            elseif not settings.SUPPRESS_WARNINGS then
+                print("§6Warning!\n§eImproper Block Info!§r\n", value.variants[1], "; §b" .. value.variants[1].blockID .. "§r is not a valid item ID!")
             end
 
         end
@@ -173,8 +172,8 @@ function populatePageBlocks(page, blockInfo)
             local wheelTexture = textures[value.actionTexture]
             if wheelTexture then
                 action:texture(wheelTexture)
-            else
-                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.actionTexture .. "§r is not a valid Blockbench texture!")
+            elseif not settings.SUPPRESS_WARNINGS then
+                print("§6Warning!\n§eImproper Block Info!§r\n", value, "; §b" .. value.actionTexture .. "§r is not a valid Blockbench texture!")
             end
         end
     end
