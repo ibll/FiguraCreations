@@ -17,16 +17,15 @@ local function applyBlock(blockInfo, hideWarnings)
     if blockInfo.name == nil
     and outputWarnings
     then
-        print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; §rhas no 'name'!")
+        print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; No 'name'!")
         return false
     end
 
-    if isValidBlockID(blockInfo.blockID) == false then
-        if blockInfo.blockID then
-            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; §b" .. blockInfo.blockID .. "§r is not a valid block ID!")
-        else
-            print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; No 'blockID'!")
-        end
+    if blockInfo.blockID == nil then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, "; No 'blockID'!")
+        return false
+    elseif isValidBlockID(blockInfo.blockID) == false then
+        print("§4Error!\n§cInvalid Block Info!§r\n", blockInfo, ";", blockInfo.blockID, "is not a valid block ID!")
         return false
     end
 
@@ -42,19 +41,25 @@ local function applyBlock(blockInfo, hideWarnings)
         if #blockInfo.otherBlocks < 1
         and outputWarnings
         then
-            print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; §botherBlocks§r is empty!")
+            print("§6Warning!\n§eImproper Block Info!§r\n", blockInfo, "; 'otherBlocks' is empty!")
             return false
         end
 
         for index, value in ipairs(blockInfo.otherBlocks) do
 
-            if type(value.offset) ~= "Vector3" then
+            if value.offset == nil then
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; No 'offset'!")
+                return false
+            elseif type(value.offset) ~= "Vector3" then
                 print("§4Error!\n§cInvalid Block Info!§r\n", value, ";", value.offset, "is not a valid Vector3!")
                 return false
             end
 
-            if not isValidBlockID(value.blockID) then
-                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; §b" .. value.blockID .. "§r is not a valid block ID!")
+            if value.blockID == nil then
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, "; No 'blockID'")
+                return false
+            elseif not isValidBlockID(value.blockID) then
+                print("§4Error!\n§cInvalid Block Info!§r\n", value, ";", value.blockID, "is not a valid block ID!")
                 return false
             end
 
