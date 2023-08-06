@@ -1,5 +1,7 @@
 local settings = require("settings")
 
+local handleErrorsAPI = {}
+
 ---------------
 -- Functions --
 ---------------
@@ -12,8 +14,6 @@ end
 -------------------
 -- API Functions --
 -------------------
-
-local handleErrorsAPI = {}
 
 function handleErrorsAPI.applyBlock(blockInfo, suppressWarnings)
     local outputWarnings = true

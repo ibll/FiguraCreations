@@ -2,9 +2,9 @@ local dataAPI = require("Scripts.data")
 
 local buildModeAPI = {}
 
--------------------
--- API Functions --
--------------------
+---------------
+-- Functions --
+---------------
 
 function pings.place(pos)
     models.model.World:newPart("PlaceForBlock"):newBlock("PlacedBlock")
@@ -13,10 +13,13 @@ function pings.place(pos)
         :setPos(pos)
 end
 
+-------------------
+-- API Functions --
+-------------------
+
 function buildModeAPI.place(pos)
     pings.place(pos)
 end
-
 
 function buildModeAPI.click()
     if dataAPI.buildModeEnabled ~= true then return end
@@ -36,7 +39,7 @@ function buildModeAPI.click()
         east = vec(16, 0, 0),
         west = vec(-16, 0, 0),
     }
-    
+
     pos = pos:add(positionOffsetVectors[side])
 
     buildModeAPI.place(pos)

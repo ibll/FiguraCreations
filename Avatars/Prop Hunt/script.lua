@@ -1,4 +1,3 @@
--- scripts
 local dataAPI = require("Scripts.data")
 local actionWheelAPI = require("Scripts.actionWheel")
 local playerAPI = require("Scripts.player")

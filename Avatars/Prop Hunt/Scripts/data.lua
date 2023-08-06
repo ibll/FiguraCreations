@@ -1,9 +1,17 @@
 local settings = require("settings")
 local applyBlock = require("Scripts.applyBlock")
 
+local dataAPI = {}
+
+----------
+-- Vars --
+----------
+
 local syncTick = 0
 
-local dataAPI = {}
+--------------
+-- API Vars --
+--------------
 
 --synced
 dataAPI.snapMode = "Rounded"
@@ -24,6 +32,10 @@ local storedBlockInfo = config:load("BlockInfo")
 if storedBlockInfo ~= nil then
     dataAPI.selectedBlockInfo = storedBlockInfo
 end
+
+---------------
+-- Functions --
+---------------
 
 function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.snapMode = snapState

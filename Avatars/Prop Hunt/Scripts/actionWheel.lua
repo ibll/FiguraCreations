@@ -2,6 +2,12 @@ local dataAPI = require("Scripts.data")
 local handleErrorsAPI = require("Scripts.handleErrors")
 local settings = require("settings")
 
+local actionWheelAPI = {}
+
+----------
+-- Vars --
+----------
+
 local ENABLED_COLOR = vectors.hexToRGB("#A6E3A1")
 local ENABLED_COLOR_HOVER = vectors.hexToRGB("#4Af43A")
 local DISABLED_COLOR = vectors.hexToRGB("#F38bA8")
@@ -12,8 +18,6 @@ local snapModeAction
 local blockChangeAction
 
 local storedVariantPages = {}
-
-local actionWheelAPI = {}
 
 local populatePageBlocks
 

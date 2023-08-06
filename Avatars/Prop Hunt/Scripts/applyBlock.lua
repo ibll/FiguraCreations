@@ -1,8 +1,15 @@
 local handleErrorsAPI = require("Scripts.handleErrors")
-local settings = require("settings")
+
+----------
+-- Vars --
+----------
 
 local blockTask
 local otherBlocks = {}
+
+-------------------
+-- API Functions --
+-------------------
 
 local function applyBlock(blockInfo, suppressWarnings)
     if handleErrorsAPI.applyBlock(blockInfo, suppressWarnings) == false then return false end
