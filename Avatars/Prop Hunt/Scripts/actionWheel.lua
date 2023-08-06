@@ -129,12 +129,14 @@ function populatePageBlocks(page, blockInfo)
             :title(value.name)
             :onLeftClick(function() blockPageAction(value, page) end)
 
+        -- i actually hate this block i'm so sorry idk how to do better ;-;
         if value.iconID then
             if isValidBlockID(value.iconID) then
                 action:item(value.iconID)
             elseif not settings.SUPPRESS_WARNINGS then
                 print("§6Warning!\n§eImproper Block Info!§r\n", value, "; §b" .. value.iconID .. "§r is not a valid item ID!")
             end
+
         elseif value.blockID then
             if isValidBlockID(value.blockID) then
                 action:item(value.blockID)
