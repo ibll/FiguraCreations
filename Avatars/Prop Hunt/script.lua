@@ -16,7 +16,7 @@ function events.entity_init()
     actionWheelAPI.setSelectedBlock(dataAPI.selectedBlockInfo.name, dataAPI.selectedBlockInfo.blockID)
 
     playerAPI.setVisibleAsProp(true)
-    applyBlock(dataAPI.selectedBlockInfo)
+    applyBlock(dataAPI.selectedBlockInfo, true)
 end
 
 function events.tick()

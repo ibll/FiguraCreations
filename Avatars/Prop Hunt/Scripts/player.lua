@@ -91,7 +91,7 @@ function playerAPI.applyModelPos()
 end
 
 function playerAPI.setBlock(blockInfo, unsnap)
-    applyBlock(blockInfo)
+    if applyBlock(blockInfo) == false then return end
 
     -- when flipping between blocks that rotate/don't rotate, unsnap the player to force re-setting
     if unsnap ~= false then

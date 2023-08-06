@@ -31,7 +31,7 @@ function pings.sync(snapState, seekerState, selectedBlockState, blockRotState)
     dataAPI.selectedBlockInfo = selectedBlockState
     dataAPI.blockRot = blockRotState
 
-    applyBlock(dataAPI.selectedBlockInfo)
+    applyBlock(dataAPI.selectedBlockInfo, true)
 end
 
 -------------------
