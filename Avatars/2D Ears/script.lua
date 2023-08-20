@@ -7,8 +7,8 @@
 -- anyway, you can get pretty much any behaviour
 -- you want by changing these.
 
--- if you don't like how it's billboarded, the offset
--- value in the render function is the actual var
+-- if you don't like how it's billboarded, the "offset"
+-- value in the render function is the actual var that
 -- everything else is calculating for you.
 
 local BILLBOARDED_MODELPART = models.model
