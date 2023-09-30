@@ -16,6 +16,8 @@ local BILLBOARDED_MODELPART = models.model
 local FRONT_ANGLE = 0
 -- the angle the ears should try to avoid.
 -- ears will keep as close back as possible.
+-- You almost certainly want them back or maybe
+-- front.
 -- To stay back, set to 0
 -- To stay right, set to 90
 -- To stay front, set to 180
