@@ -1,0 +1,11 @@
+{
+  "name": "Steamboat Willie",
+  "authors": [
+    "github.com/ibll"
+  ],
+  "color": "#64F",
+  "scripts": [
+    "script",
+    "Billboarding"
+  ]
+}
